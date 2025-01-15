@@ -8,7 +8,8 @@ defmodule Reactor.File do
       [
         Reactor.File.Dsl.Glob,
         Reactor.File.Dsl.Mkdir,
-        Reactor.File.Dsl.MkdirP
+        Reactor.File.Dsl.MkdirP,
+        Reactor.File.Dsl.Rmdir
       ]
       |> Enum.map(
         &%Spark.Dsl.Patch.AddEntity{
