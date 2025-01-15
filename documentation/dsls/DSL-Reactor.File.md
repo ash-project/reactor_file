@@ -86,4 +86,160 @@ Target: `Reactor.File.Dsl.Glob`
 
 
 
+## reactor.mkdir
+```elixir
+mkdir name
+```
+
+
+Creates a directory.
+
+Uses `File.mkdir/1` behind the scenes.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-mkdir-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-mkdir-name){: #reactor-mkdir-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-mkdir-path){: #reactor-mkdir-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path of the directory to create |
+| [`description`](#reactor-mkdir-description){: #reactor-mkdir-description } | `String.t` |  | An optional description for the step |
+
+
+## reactor.mkdir.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-mkdir-wait_for-names){: #reactor-mkdir-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-mkdir-wait_for-description){: #reactor-mkdir-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.Mkdir`
+
+
+
+## reactor.mkdir_p
+```elixir
+mkdir_p name
+```
+
+
+Creates a directory and any intermediate directories which also must be created.
+
+Uses `File.mkdir_p/1` behind the scenes.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-mkdir_p-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-mkdir_p-name){: #reactor-mkdir_p-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-mkdir_p-path){: #reactor-mkdir_p-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path of the directory to create |
+| [`description`](#reactor-mkdir_p-description){: #reactor-mkdir_p-description } | `String.t` |  | An optional description for the step |
+
+
+## reactor.mkdir_p.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-mkdir_p-wait_for-names){: #reactor-mkdir_p-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-mkdir_p-wait_for-description){: #reactor-mkdir_p-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.MkdirP`
+
+
+
 <style type="text/css">.spark-required::after { content: "*"; color: red !important; }</style>
