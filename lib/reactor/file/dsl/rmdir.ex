@@ -5,13 +5,14 @@ defmodule Reactor.File.Dsl.Rmdir do
 
   alias Reactor.{Dsl.WaitFor, Template}
 
-  defstruct __identifier__: nil, description: nil, name: nil, path: nil
+  defstruct __identifier__: nil, description: nil, name: nil, path: nil, recreate_on_undo?: false
 
   @type t :: %__MODULE__{
           __identifier__: any,
           description: nil | String.t(),
           name: any,
-          path: Path.t()
+          path: Path.t(),
+          recreate_on_undo?: boolean
         }
 
   @doc false
@@ -45,6 +46,12 @@ defmodule Reactor.File.Dsl.Rmdir do
           type: Template.type(),
           required: true,
           doc: "The path of the directory to remove"
+        ],
+        recreate_on_undo?: [
+          type: :boolean,
+          required: false,
+          default: false,
+          doc: "Recreate the directory if the Reactor is undoing changes"
         ]
       ]
     }

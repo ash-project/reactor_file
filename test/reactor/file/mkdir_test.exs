@@ -33,6 +33,33 @@ defmodule Reactor.File.MkdirTest do
     end
   end
 
+  describe "mkdir with undo" do
+    defmodule MkdirWithUndoReactor do
+      @moduledoc false
+      use Reactor, extensions: [Reactor.File]
+
+      input(:path)
+
+      mkdir :some_dir do
+        path(input(:path))
+        remove_on_undo?(true)
+      end
+
+      flunk :fail, "abort" do
+        wait_for(:some_dir)
+      end
+    end
+
+    test "when the reactor fails, it removes the directory", %{tmp_dir: tmp_dir} do
+      path = Path.join(tmp_dir, "some_dir")
+
+      refute File.exists?(path)
+      assert {:error, error} = Reactor.run(MkdirWithUndoReactor, %{path: path})
+      refute File.exists?(path)
+      assert Exception.message(error) =~ ~r/abort/
+    end
+  end
+
   describe "mkdir_p" do
     defmodule MkdirPReactor do
       @moduledoc false
@@ -61,6 +88,33 @@ defmodule Reactor.File.MkdirTest do
       refute File.exists?(path)
       Reactor.run!(MkdirPReactor, %{path: path})
       assert File.dir?(path)
+    end
+  end
+
+  describe "mkdir_p with undo" do
+    defmodule MkdirPWithUndoReactor do
+      @moduledoc false
+      use Reactor, extensions: [Reactor.File]
+
+      input(:path)
+
+      mkdir_p :some_dir do
+        path(input(:path))
+        remove_on_undo?(true)
+      end
+
+      flunk :fail, "abort" do
+        wait_for(:some_dir)
+      end
+    end
+
+    test "when the reactor fails, it removes the directory", %{tmp_dir: tmp_dir} do
+      path = Path.join(tmp_dir, "some_dir")
+
+      refute File.exists?(path)
+      assert {:error, error} = Reactor.run(MkdirPWithUndoReactor, %{path: path})
+      refute File.exists?(path)
+      assert Exception.message(error) =~ ~r/abort/
     end
   end
 end

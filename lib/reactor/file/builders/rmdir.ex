@@ -7,7 +7,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Rmdir do
     Builder.add_step(
       reactor,
       rmdir.name,
-      Reactor.File.Step.Rmdir,
+      {Reactor.File.Step.Rmdir, recreate_on_undo?: rmdir.recreate_on_undo?},
       [Argument.from_template(:path, rmdir.path)],
       ref: :step_name
     )
