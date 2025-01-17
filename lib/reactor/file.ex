@@ -8,6 +8,7 @@ defmodule Reactor.File do
       [
         Reactor.File.Dsl.Chgrp,
         Reactor.File.Dsl.Chown,
+        Reactor.File.Dsl.Chmod,
         Reactor.File.Dsl.Glob,
         Reactor.File.Dsl.Mkdir,
         Reactor.File.Dsl.MkdirP,

@@ -167,6 +167,86 @@ Target: `Reactor.File.Dsl.Chown`
 
 
 
+## reactor.chmod
+```elixir
+chmod name
+```
+
+
+Change the permissions of a file or directory.
+
+Uses `File.chmod/2` behind the scenes.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-chmod-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-chmod-name){: #reactor-chmod-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-chmod-path){: #reactor-chmod-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the file or directory |
+| [`mode`](#reactor-chmod-mode){: #reactor-chmod-mode .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The mode to set the file permissions to |
+| [`description`](#reactor-chmod-description){: #reactor-chmod-description } | `String.t` |  | An optional description for the step |
+| [`revert_on_undo?`](#reactor-chmod-revert_on_undo?){: #reactor-chmod-revert_on_undo? } | `boolean` | `false` | Change the permissions back to the original value on undo? |
+
+
+## reactor.chmod.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-chmod-wait_for-names){: #reactor-chmod-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-chmod-wait_for-description){: #reactor-chmod-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.Chmod`
+
+
+
 ## reactor.glob
 ```elixir
 glob name
