@@ -7,9 +7,9 @@ An extension which provides steps for working with the local filesystem within R
 
 
 
-## reactor.file_glob
+## reactor.glob
 ```elixir
-file_glob name
+glob name
 ```
 
 
@@ -19,7 +19,7 @@ Uses `Path.wildcard/2` under the hood.
 
 
 ### Nested DSLs
- * [wait_for](#reactor-file_glob-wait_for)
+ * [wait_for](#reactor-glob-wait_for)
 
 
 
@@ -28,17 +28,17 @@ Uses `Path.wildcard/2` under the hood.
 
 | Name | Type | Default | Docs |
 |------|------|---------|------|
-| [`name`](#reactor-file_glob-name){: #reactor-file_glob-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+| [`name`](#reactor-glob-name){: #reactor-glob-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
 ### Options
 
 | Name | Type | Default | Docs |
 |------|------|---------|------|
-| [`pattern`](#reactor-file_glob-pattern){: #reactor-file_glob-pattern .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | A pattern used to select files. See `Path.wildcard/2` for more information. |
-| [`description`](#reactor-file_glob-description){: #reactor-file_glob-description } | `String.t` |  | An optional description for the step |
-| [`match_dot`](#reactor-file_glob-match_dot){: #reactor-file_glob-match_dot } | `boolean` | `false` | Whether or not files starting with a `.` will be matched by the pattern. See `Path.wildcard/2` for more information. |
+| [`pattern`](#reactor-glob-pattern){: #reactor-glob-pattern .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | A pattern used to select files. See `Path.wildcard/2` for more information. |
+| [`description`](#reactor-glob-description){: #reactor-glob-description } | `String.t` |  | An optional description for the step |
+| [`match_dot`](#reactor-glob-match_dot){: #reactor-glob-match_dot } | `boolean` | `false` | Whether or not files starting with a `.` will be matched by the pattern. See `Path.wildcard/2` for more information. |
 
 
-## reactor.file_glob.wait_for
+## reactor.glob.wait_for
 ```elixir
 wait_for names
 ```
@@ -62,12 +62,12 @@ wait_for :create_user
 
 | Name | Type | Default | Docs |
 |------|------|---------|------|
-| [`names`](#reactor-file_glob-wait_for-names){: #reactor-file_glob-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+| [`names`](#reactor-glob-wait_for-names){: #reactor-glob-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
 ### Options
 
 | Name | Type | Default | Docs |
 |------|------|---------|------|
-| [`description`](#reactor-file_glob-wait_for-description){: #reactor-file_glob-wait_for-description } | `String.t` |  | An optional description. |
+| [`description`](#reactor-glob-wait_for-description){: #reactor-glob-wait_for-description } | `String.t` |  | An optional description. |
 
 
 

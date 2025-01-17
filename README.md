@@ -16,7 +16,7 @@ defmodule ReverseFilesInDirectory do
 
   input :directory
 
-  file_glob :all_files do
+  glob :all_files do
     pattern input(:directory), transform: &Path.join(&1, "*")
   end
 

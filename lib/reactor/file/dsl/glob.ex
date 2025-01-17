@@ -1,6 +1,6 @@
 defmodule Reactor.File.Dsl.Glob do
   @moduledoc """
-  A `file_glob` DSL entity for the `Reactor.File` DSL extension.
+  A `glob` DSL entity for the `Reactor.File` DSL extension.
   """
 
   alias Reactor.{Dsl.WaitFor, Template}
@@ -18,7 +18,7 @@ defmodule Reactor.File.Dsl.Glob do
   @doc false
   def __entity__,
     do: %Spark.Dsl.Entity{
-      name: :file_glob,
+      name: :glob,
       describe: """
       Searches for files matching the provided pattern.
 

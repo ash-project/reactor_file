@@ -8,7 +8,7 @@ defmodule Reactor.File.GlobTest do
 
     input(:pattern)
 
-    file_glob :all_files do
+    glob :all_files do
       pattern(input(:pattern))
     end
   end
@@ -19,7 +19,7 @@ defmodule Reactor.File.GlobTest do
 
     input(:pattern)
 
-    file_glob :all_files do
+    glob :all_files do
       pattern(input(:pattern))
       match_dot(true)
     end
