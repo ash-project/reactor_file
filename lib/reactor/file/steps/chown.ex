@@ -1,14 +1,14 @@
-defmodule Reactor.File.Step.Chgrp do
+defmodule Reactor.File.Step.Chown do
   @arg_schema Spark.Options.new!(
-                gid: [
-                  type: :pos_integer,
-                  required: true,
-                  doc: "The GID to change the file to"
-                ],
                 path: [
                   type: :string,
                   required: true,
                   doc: "The path of the file to change"
+                ],
+                uid: [
+                  type: :pos_integer,
+                  required: true,
+                  doc: "The UID to change the file to"
                 ]
               )
 
@@ -17,12 +17,12 @@ defmodule Reactor.File.Step.Chgrp do
                   type: :boolean,
                   required: false,
                   default: false,
-                  doc: "Change the GID back to the original value on undo?"
+                  doc: "Change the UID back to the original value on undo?"
                 ]
               )
 
   @moduledoc """
-  A step which calls `File.chgrp/2`.
+  A step which calls `File.chown/2`.
 
   ## Arguments
 
@@ -34,7 +34,7 @@ defmodule Reactor.File.Step.Chgrp do
 
   ## Returns
 
-  The original GID of the file before modification.
+  The original UID of the file before modification.
   """
   use Reactor.Step
 
@@ -43,9 +43,9 @@ defmodule Reactor.File.Step.Chgrp do
   def run(arguments, _context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, _options} <- Spark.Options.validate(options, @opt_schema),
-         {:ok, %{gid: gid}} <- File.stat(arguments[:path]),
-         :ok <- File.chgrp(arguments[:path], arguments[:gid]) do
-      {:ok, gid}
+         {:ok, %{uid: uid}} <- File.stat(arguments[:path]),
+         :ok <- File.chown(arguments[:path], arguments[:uid]) do
+      {:ok, uid}
     end
   end
 
@@ -62,9 +62,9 @@ defmodule Reactor.File.Step.Chgrp do
 
   @doc false
   @impl true
-  def undo(gid, arguments, _context, options) do
+  def undo(uid, arguments, _context, options) do
     if Keyword.get(options, :revert_on_undo?) do
-      File.chgrp(arguments.path, gid)
+      File.chown(arguments.path, uid)
     else
       :ok
     end

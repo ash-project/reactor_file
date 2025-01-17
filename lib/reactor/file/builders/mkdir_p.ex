@@ -3,12 +3,12 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.MkdirP do
   alias Reactor.{Argument, Builder}
 
   @doc false
-  def build(mkdir, reactor) do
+  def build(step, reactor) do
     Builder.add_step(
       reactor,
-      mkdir.name,
-      {Reactor.File.Step.Mkdir, minus_p: true, remove_on_undo?: mkdir.remove_on_undo?},
-      [Argument.from_template(:path, mkdir.path) | mkdir.arguments],
+      step.name,
+      {Reactor.File.Step.Mkdir, minus_p: true, remove_on_undo?: step.remove_on_undo?},
+      [Argument.from_template(:path, step.path) | step.arguments],
       ref: :step_name
     )
   end

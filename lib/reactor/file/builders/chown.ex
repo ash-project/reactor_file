@@ -1,4 +1,4 @@
-defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Chgrp do
+defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Chown do
   @moduledoc false
   alias Reactor.{Argument, Builder}
 
@@ -7,14 +7,14 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Chgrp do
     arguments =
       step.arguments
       |> Enum.concat([
-        Argument.from_template(:gid, step.gid),
-        Argument.from_template(:path, step.path)
+        Argument.from_template(:path, step.path),
+        Argument.from_template(:uid, step.uid)
       ])
 
     Builder.add_step(
       reactor,
       step.name,
-      {Reactor.File.Step.Chgrp, revert_on_undo?: step.revert_on_undo?},
+      {Reactor.File.Step.Chown, revert_on_undo?: step.revert_on_undo?},
       arguments,
       ref: :step_name
     )

@@ -34,7 +34,7 @@ Uses `File.chgrp/2` behind the scenes.
 | Name | Type | Default | Docs |
 |------|------|---------|------|
 | [`path`](#reactor-chgrp-path){: #reactor-chgrp-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the file or directory |
-| [`gid`](#reactor-chgrp-gid){: #reactor-chgrp-gid .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The GID to set the file to |
+| [`gid`](#reactor-chgrp-gid){: #reactor-chgrp-gid .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The GID to set the file group to |
 | [`description`](#reactor-chgrp-description){: #reactor-chgrp-description } | `String.t` |  | An optional description for the step |
 | [`revert_on_undo?`](#reactor-chgrp-revert_on_undo?){: #reactor-chgrp-revert_on_undo? } | `boolean` | `false` | Change the GID back to the original value on undo? |
 
@@ -84,6 +84,86 @@ Target: `Reactor.Dsl.WaitFor`
 ### Introspection
 
 Target: `Reactor.File.Dsl.Chgrp`
+
+
+
+## reactor.chown
+```elixir
+chown name
+```
+
+
+Change the owner of a file or directory.
+
+Uses `File.chown/2` behind the scenes.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-chown-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-chown-name){: #reactor-chown-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-chown-path){: #reactor-chown-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the file or directory |
+| [`uid`](#reactor-chown-uid){: #reactor-chown-uid .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The UID to set the file owner to |
+| [`description`](#reactor-chown-description){: #reactor-chown-description } | `String.t` |  | An optional description for the step |
+| [`revert_on_undo?`](#reactor-chown-revert_on_undo?){: #reactor-chown-revert_on_undo? } | `boolean` | `false` | Change the UID back to the original value on undo? |
+
+
+## reactor.chown.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-chown-wait_for-names){: #reactor-chown-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-chown-wait_for-description){: #reactor-chown-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.Chown`
 
 
 

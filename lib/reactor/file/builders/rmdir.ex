@@ -3,12 +3,12 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Rmdir do
   alias Reactor.{Argument, Builder}
 
   @doc false
-  def build(rmdir, reactor) do
+  def build(step, reactor) do
     Builder.add_step(
       reactor,
-      rmdir.name,
-      {Reactor.File.Step.Rmdir, recreate_on_undo?: rmdir.recreate_on_undo?},
-      [Argument.from_template(:path, rmdir.path) | rmdir.arguments],
+      step.name,
+      {Reactor.File.Step.Rmdir, recreate_on_undo?: step.recreate_on_undo?},
+      [Argument.from_template(:path, step.path) | step.arguments],
       ref: :step_name
     )
   end

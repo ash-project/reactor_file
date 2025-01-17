@@ -7,6 +7,7 @@ defmodule Reactor.File do
     dsl_patches:
       [
         Reactor.File.Dsl.Chgrp,
+        Reactor.File.Dsl.Chown,
         Reactor.File.Dsl.Glob,
         Reactor.File.Dsl.Mkdir,
         Reactor.File.Dsl.MkdirP,

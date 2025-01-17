@@ -1,6 +1,6 @@
-defmodule Reactor.File.Dsl.Chgrp do
+defmodule Reactor.File.Dsl.Chown do
   @moduledoc """
-  A `chgrp` DSL entity for the `Reactor.File` DSL extension.
+  A `chown` DSL entity for the `Reactor.File` DSL extension.
   """
 
   alias Reactor.{Dsl.Argument, Dsl.WaitFor, Template}
@@ -8,29 +8,29 @@ defmodule Reactor.File.Dsl.Chgrp do
   defstruct __identifier__: nil,
             arguments: [],
             description: nil,
-            gid: nil,
             name: nil,
             path: nil,
-            revert_on_undo?: false
+            revert_on_undo?: false,
+            uid: nil
 
   @type t :: %__MODULE__{
           __identifier__: any,
           arguments: [Argument.t()],
           description: nil | String.t(),
-          gid: Template.t(),
           name: any,
           path: Template.t(),
-          revert_on_undo?: boolean
+          revert_on_undo?: boolean,
+          uid: Template.t()
         }
 
   @doc false
   def __entity__,
     do: %Spark.Dsl.Entity{
-      name: :chgrp,
+      name: :chown,
       describe: """
-      Change the group of a file or directory.
+      Change the owner of a file or directory.
 
-      Uses `File.chgrp/2` behind the scenes.
+      Uses `File.chown/2` behind the scenes.
       """,
       target: __MODULE__,
       identifier: :name,
@@ -55,16 +55,16 @@ defmodule Reactor.File.Dsl.Chgrp do
           required: true,
           doc: "The path to the file or directory"
         ],
-        gid: [
+        uid: [
           type: Template.type(),
           required: true,
-          doc: "The GID to set the file group to"
+          doc: "The UID to set the file owner to"
         ],
         revert_on_undo?: [
           type: :boolean,
           required: false,
           default: false,
-          doc: "Change the GID back to the original value on undo?"
+          doc: "Change the UID back to the original value on undo?"
         ]
       ]
     }

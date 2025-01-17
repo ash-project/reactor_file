@@ -3,12 +3,12 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Stat do
   alias Reactor.{Argument, Builder}
 
   @doc false
-  def build(stat, reactor) do
+  def build(step, reactor) do
     Builder.add_step(
       reactor,
-      stat.name,
-      {Reactor.File.Step.Stat, time: stat.time},
-      [Argument.from_template(:path, stat.path) | stat.arguments],
+      step.name,
+      {Reactor.File.Step.Stat, time: step.time},
+      [Argument.from_template(:path, step.path) | step.arguments],
       ref: :step_name
     )
   end

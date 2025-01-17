@@ -3,12 +3,12 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Glob do
   alias Reactor.{Argument, Builder}
 
   @doc false
-  def build(glob, reactor) do
+  def build(step, reactor) do
     Builder.add_step(
       reactor,
-      glob.name,
-      {Reactor.File.Step.Glob, match_dot: glob.match_dot},
-      [Argument.from_template(:pattern, glob.pattern) | glob.arguments],
+      step.name,
+      {Reactor.File.Step.Glob, match_dot: step.match_dot},
+      [Argument.from_template(:pattern, step.pattern) | step.arguments],
       ref: :step_name
     )
   end
