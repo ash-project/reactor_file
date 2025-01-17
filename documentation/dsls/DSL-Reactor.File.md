@@ -323,4 +323,83 @@ Target: `Reactor.File.Dsl.Rmdir`
 
 
 
+## reactor.stat
+```elixir
+stat name
+```
+
+
+Returns information about a path.
+
+See `File.stat/2` for more information.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-stat-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-stat-name){: #reactor-stat-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-stat-path){: #reactor-stat-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path of the directory to create |
+| [`description`](#reactor-stat-description){: #reactor-stat-description } | `String.t` |  | An optional description for the step |
+| [`time`](#reactor-stat-time){: #reactor-stat-time } | `:universal \| :local \| :posix` | `:posix` | What format to return the file times in. See `File.stat/2` for more. |
+
+
+## reactor.stat.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-stat-wait_for-names){: #reactor-stat-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-stat-wait_for-description){: #reactor-stat-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.Stat`
+
+
+
 <style type="text/css">.spark-required::after { content: "*"; color: red !important; }</style>
