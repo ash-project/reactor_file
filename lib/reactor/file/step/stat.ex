@@ -28,13 +28,14 @@ defmodule Reactor.File.Step.Stat do
   #{Spark.Options.docs(@opt_schema)}
   """
   use Reactor.Step
+  import Reactor.File.Ops
 
   @doc false
   @impl true
-  def run(arguments, _context, options) do
+  def run(arguments, context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, options} <- Spark.Options.validate(options, @opt_schema) do
-      File.stat(arguments[:path], time: options[:time])
+      stat(arguments[:path], [time: options[:time]], context.current_step)
     end
   end
 end

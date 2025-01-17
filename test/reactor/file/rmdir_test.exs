@@ -46,7 +46,7 @@ defmodule Reactor.File.RmdirTest do
       File.mkdir!(path)
 
       assert {:error, error} = Reactor.run(RmdirUndoReactor, %{path: path})
-      assert File.dir?(path)
+      assert %{type: :directory} = File.stat!(path)
       assert Exception.message(error) =~ ~r/abort/
     end
   end

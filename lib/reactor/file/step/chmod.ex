@@ -37,15 +37,39 @@ defmodule Reactor.File.Step.Chmod do
   The original GID of the file before modification.
   """
   use Reactor.Step
+  import Reactor.File.Ops
+
+  defmodule Result do
+    @moduledoc """
+    The result of a `chmod` step.
+
+    Contains the path that was changed, as well as before and after stats.
+    """
+    defstruct path: nil, before_stat: nil, after_stat: nil, changed?: nil
+
+    @type t :: %__MODULE__{
+            path: Path.t(),
+            before_stat: File.Stat.t(),
+            after_stat: File.Stat.t(),
+            changed?: boolean
+          }
+  end
 
   @doc false
   @impl true
-  def run(arguments, _context, options) do
+  def run(arguments, context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, _options} <- Spark.Options.validate(options, @opt_schema),
-         {:ok, %{mode: mode}} <- File.stat(arguments[:path]),
-         :ok <- File.chmod(arguments[:path], arguments[:mode]) do
-      {:ok, mode}
+         {:ok, before_stat} <- stat(arguments[:path], [], context.current_step),
+         :ok <- chmod(arguments[:path], arguments[:mode], context.current_step),
+         {:ok, after_stat} <- stat(arguments[:path], [], context.current_step) do
+      {:ok,
+       %Result{
+         path: arguments[:path],
+         before_stat: before_stat,
+         after_stat: after_stat,
+         changed?: before_stat.mode != after_stat.mode
+       }}
     end
   end
 
@@ -62,9 +86,11 @@ defmodule Reactor.File.Step.Chmod do
 
   @doc false
   @impl true
-  def undo(mode, arguments, _context, options) do
+  def undo(result, _, _, _) when result.changed? == false, do: :ok
+
+  def undo(result, _arguments, context, options) do
     if Keyword.get(options, :revert_on_undo?) do
-      File.chmod(arguments.path, mode)
+      chmod(result.path, result.before_stat.mode, context.current_step)
     else
       :ok
     end

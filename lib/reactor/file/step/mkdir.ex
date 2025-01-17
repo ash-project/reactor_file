@@ -34,14 +34,40 @@ defmodule Reactor.File.Step.Mkdir do
   #{Spark.Options.docs(@opt_schema)}
   """
   use Reactor.Step
+  import Reactor.File.Ops
+
+  defmodule Result do
+    @moduledoc """
+    The result of a `mkdir` step.
+
+    Contains the path being changed, and the stats before and after the change.
+    """
+    defstruct path: nil, before_stat: nil, after_stat: nil, changed?: nil
+
+    @type t :: %__MODULE__{
+            path: Path.t(),
+            before_stat: File.Stat.t(),
+            after_stat: File.Stat.t(),
+            changed?: boolean
+          }
+  end
 
   @doc false
   @impl true
-  def run(arguments, _context, options) do
+  def run(arguments, context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, options} <- Spark.Options.validate(options, @opt_schema),
-         :ok <- mkdir(arguments[:path], options[:minus_p]) do
-      {:ok, arguments[:path]}
+         {:ok, before_stat} <- maybe_stat(arguments[:path], [], context.current_step),
+         :ok <-
+           maybe_mkdir(arguments[:path], before_stat, options[:minus_p], context.current_step),
+         {:ok, after_stat} <- stat(arguments[:path], [], context.current_step) do
+      {:ok,
+       %Result{
+         path: arguments[:path],
+         before_stat: before_stat,
+         after_stat: after_stat,
+         changed?: is_nil(before_stat)
+       }}
     end
   end
 
@@ -58,16 +84,17 @@ defmodule Reactor.File.Step.Mkdir do
 
   @doc false
   @impl true
-  def undo(_path, arguments, _context, options) do
+  def undo(result, _, _, _) when result.changed? == false, do: :ok
+
+  def undo(result, _arguments, context, options) do
     if Keyword.get(options, :remove_on_undo?) do
-      with {:ok, _} <- File.rm_rf(arguments.path) do
-        :ok
-      end
+      rmdir(result.path, context.current_step)
     else
       :ok
     end
   end
 
-  defp mkdir(path, false), do: File.mkdir(path)
-  defp mkdir(path, true), do: File.mkdir_p(path)
+  defp maybe_mkdir(_path, %File.Stat{type: :directory}, _, _), do: :ok
+  defp maybe_mkdir(path, _, true, step), do: mkdir_p(path, step)
+  defp maybe_mkdir(path, _, false, step), do: mkdir(path, step)
 end

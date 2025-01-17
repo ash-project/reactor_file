@@ -1,0 +1,171 @@
+defmodule Reactor.File.Ops do
+  @moduledoc false
+
+  alias Reactor.File.{FileError, MissingMiddlewareError}
+  require Reactor.File.FileError
+
+  @doc "An error wrapped version of `File.chgrp/2`"
+  def chgrp(path, gid, step, message \\ "Unable to change group") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.chgrp(path, gid) do
+      {:error,
+       FileError.exception(
+         action: :chgrp,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.chmod/2`"
+  def chmod(path, mode, step, message \\ "Unable to change permissions") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.chmod(path, mode) do
+      {:error,
+       FileError.exception(
+         action: :chmod,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.chown/2`"
+  def chown(path, uid, step, message \\ "Unable to change owner") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.chown(path, uid) do
+      {:error,
+       FileError.exception(
+         action: :chown,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.cp/2`"
+  def cp(source_path, destination_path, step, message \\ "Unable to copy file") do
+    with {:error, reason} when FileError.is_posix(reason) <-
+           File.cp(source_path, destination_path) do
+      {:error,
+       FileError.exception(
+         action: {:cp, source_path, destination_path},
+         step: step,
+         message: message,
+         file: destination_path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.mkdir/1`"
+  def mkdir(path, step, message \\ "Unable to create directory") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.mkdir(path) do
+      {:error,
+       FileError.exception(
+         action: :mkdir,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.mkdir_p/1`"
+  def mkdir_p(path, step, message \\ "Unable to create directory") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.mkdir_p(path) do
+      {:error,
+       FileError.exception(
+         action: :mkdir_p,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.rmdir/1`"
+  def rmdir(path, step, message \\ "Unable to remove directory") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.rmdir(path) do
+      {:error,
+       FileError.exception(
+         action: :rmdir,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.rm_rf/1`"
+  def rm_rf(path, step, message \\ "Unable to recursively delete") do
+    with {:error, reason, fail_path} when FileError.is_posix(reason) <- File.rm_rf(path) do
+      {:error,
+       FileError.exception(
+         action: {:rm_rf, path},
+         step: step,
+         message: message,
+         file: fail_path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.rm/1`"
+  def rm(path, step, message \\ "Unable to delete file") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.rm(path) do
+      {:error,
+       FileError.exception(
+         action: :rm,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.stat/2`"
+  def stat(path, opts, step, message \\ "Unable to retrieve file information") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.stat(path, opts) do
+      {:error,
+       FileError.exception(
+         action: :stat,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "A stat which doesn't fail when the file doesn't exist"
+  def maybe_stat(path, opts, step, message \\ "Unable to retrieve file information") do
+    if File.exists?(path) do
+      stat(path, opts, step, message)
+    else
+      {:ok, nil}
+    end
+  end
+
+  @doc "Places a copy of a file into the undo stash"
+  def backup_file(path, context, message \\ "Unable to backup file")
+
+  def backup_file(path, %{Reactor.File.Middleware => %{tmp_dir: tmp_dir}} = context, message) do
+    backup_file_name = {context.current_step, path} |> :erlang.phash2() |> Integer.to_string(16)
+    backup_path = Path.join(tmp_dir, backup_file_name)
+
+    with :ok <- cp(path, backup_path, message) do
+      {:ok, backup_path}
+    end
+  end
+
+  def backup_file(_path, context, message),
+    do: {:error, MissingMiddlewareError.exception(message: message, step: context.current_step)}
+end

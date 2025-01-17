@@ -37,15 +37,39 @@ defmodule Reactor.File.Step.Chown do
   The original UID of the file before modification.
   """
   use Reactor.Step
+  import Reactor.File.Ops
+
+  defmodule Result do
+    @moduledoc """
+    The result of a `chown` step.
+
+    Contains the path being changed, and the stats before and after the change.
+    """
+    defstruct path: nil, before_stat: nil, after_stat: nil, changed?: nil
+
+    @type t :: %__MODULE__{
+            path: Path.t(),
+            before_stat: File.Stat.t(),
+            after_stat: File.Stat.t(),
+            changed?: boolean
+          }
+  end
 
   @doc false
   @impl true
-  def run(arguments, _context, options) do
+  def run(arguments, context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, _options} <- Spark.Options.validate(options, @opt_schema),
-         {:ok, %{uid: uid}} <- File.stat(arguments[:path]),
-         :ok <- File.chown(arguments[:path], arguments[:uid]) do
-      {:ok, uid}
+         {:ok, before_stat} <- stat(arguments[:path], [], context.current_step),
+         :ok <- chown(arguments[:path], arguments[:uid], context.current_step),
+         {:ok, after_stat} <- stat(arguments[:path], [], context.current_step) do
+      {:ok,
+       %Result{
+         path: arguments[:path],
+         before_stat: before_stat,
+         after_stat: after_stat,
+         changed?: before_stat.uid != after_stat.uid
+       }}
     end
   end
 
@@ -62,9 +86,11 @@ defmodule Reactor.File.Step.Chown do
 
   @doc false
   @impl true
-  def undo(uid, arguments, _context, options) do
+  def undo(result, _, _, _) when result.changed? == false, do: :ok
+
+  def undo(result, _arguments, context, options) do
     if Keyword.get(options, :revert_on_undo?) do
-      File.chown(arguments.path, uid)
+      chown(result.path, result.before_stat.uid, context.current_step)
     else
       :ok
     end
