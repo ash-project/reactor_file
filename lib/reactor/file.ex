@@ -6,6 +6,7 @@ defmodule Reactor.File do
   use Spark.Dsl.Extension,
     dsl_patches:
       [
+        Reactor.File.Dsl.Chgrp,
         Reactor.File.Dsl.Glob,
         Reactor.File.Dsl.Mkdir,
         Reactor.File.Dsl.MkdirP,

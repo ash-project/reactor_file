@@ -8,7 +8,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Glob do
       reactor,
       glob.name,
       {Reactor.File.Step.Glob, match_dot: glob.match_dot},
-      [Argument.from_template(:pattern, glob.pattern)],
+      [Argument.from_template(:pattern, glob.pattern) | glob.arguments],
       ref: :step_name
     )
   end

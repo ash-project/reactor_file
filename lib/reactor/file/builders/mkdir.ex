@@ -8,7 +8,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Mkdir do
       reactor,
       mkdir.name,
       {Reactor.File.Step.Mkdir, remove_on_undo?: mkdir.remove_on_undo?},
-      [Argument.from_template(:path, mkdir.path)],
+      [Argument.from_template(:path, mkdir.path) | mkdir.arguments],
       ref: :step_name
     )
   end

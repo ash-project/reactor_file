@@ -3,12 +3,18 @@ defmodule Reactor.File.Dsl.MkdirP do
   A `mkdir_p` DSL entity for the `Reactor.File` DSL extension.
   """
 
-  alias Reactor.{Dsl.WaitFor, Template}
+  alias Reactor.{Dsl.Argument, Dsl.WaitFor, Template}
 
-  defstruct __identifier__: nil, description: nil, name: nil, path: nil, remove_on_undo?: false
+  defstruct __identifier__: nil,
+            arguments: [],
+            description: nil,
+            name: nil,
+            path: nil,
+            remove_on_undo?: false
 
   @type t :: %__MODULE__{
           __identifier__: any,
+          arguments: [Argument.t()],
           description: nil | String.t(),
           name: any,
           path: Path.t(),
@@ -29,7 +35,7 @@ defmodule Reactor.File.Dsl.MkdirP do
       args: [:name],
       recursive_as: :steps,
       entities: [arguments: [WaitFor.__entity__()]],
-      imports: [Reactor.Dsl.Argument],
+      imports: [Argument],
       schema: [
         name: [
           type: :atom,

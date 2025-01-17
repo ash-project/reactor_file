@@ -8,7 +8,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Stat do
       reactor,
       stat.name,
       {Reactor.File.Step.Stat, time: stat.time},
-      [Argument.from_template(:path, stat.path)],
+      [Argument.from_template(:path, stat.path) | stat.arguments],
       ref: :step_name
     )
   end

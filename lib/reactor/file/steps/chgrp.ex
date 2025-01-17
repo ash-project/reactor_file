@@ -1,27 +1,36 @@
-defmodule Reactor.File.Step.Rmdir do
+defmodule Reactor.File.Step.Chgrp do
   @arg_schema Spark.Options.new!(
+                gid: [
+                  type: :pos_integer,
+                  required: true,
+                  doc: "The GID to change the file to"
+                ],
                 path: [
                   type: :string,
                   required: true,
-                  doc: "The path of the directory to create"
+                  doc: "The path of the file to change"
                 ]
               )
 
   @opt_schema Spark.Options.new!(
-                recreate_on_undo?: [
+                revert_on_undo?: [
                   type: :boolean,
                   required: false,
                   default: false,
-                  doc: "Recreate the directory if the Reactor is undoing changes"
+                  doc: "Change the GID back to the original value on undo?"
                 ]
               )
 
   @moduledoc """
-  A step which calls `File.rmdir/1`.
+  A step which calls `File.chgrp/2`.
 
   ## Arguments
 
   #{Spark.Options.docs(@arg_schema)}
+
+  ## Returns
+
+  The original GID of the file before modification.
   """
   use Reactor.Step
 
@@ -30,8 +39,9 @@ defmodule Reactor.File.Step.Rmdir do
   def run(arguments, _context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, _options} <- Spark.Options.validate(options, @opt_schema),
-         :ok <- File.rmdir(arguments[:path]) do
-      {:ok, arguments[:path]}
+         {:ok, %{gid: gid}} <- File.stat(arguments[:path]),
+         :ok <- File.chgrp(arguments[:path], arguments[:gid]) do
+      {:ok, gid}
     end
   end
 
@@ -39,7 +49,7 @@ defmodule Reactor.File.Step.Rmdir do
   @impl true
   def can?(%{impl: {_, options}}, :undo) do
     with {:ok, options} <- Spark.Options.validate(options, @opt_schema) do
-      options[:recreate_on_undo?]
+      options[:revert_on_undo?]
     end
   end
 
@@ -48,9 +58,9 @@ defmodule Reactor.File.Step.Rmdir do
 
   @doc false
   @impl true
-  def undo(_path, arguments, _context, options) do
-    if Keyword.get(options, :recreate_on_undo?) do
-      File.mkdir(arguments.path)
+  def undo(gid, arguments, _context, options) do
+    if Keyword.get(options, :revert_on_undo?) do
+      File.chgrp(arguments.path, gid)
     else
       :ok
     end

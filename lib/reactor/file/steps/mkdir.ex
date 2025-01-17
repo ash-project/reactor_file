@@ -53,6 +53,7 @@ defmodule Reactor.File.Step.Mkdir do
     end
   end
 
+  def can?(_, :undo), do: false
   def can?(step, capability), do: super(step, capability)
 
   @doc false

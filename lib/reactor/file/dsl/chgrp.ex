@@ -1,6 +1,6 @@
-defmodule Reactor.File.Dsl.Stat do
+defmodule Reactor.File.Dsl.Chgrp do
   @moduledoc """
-  A `stat` DSL entity for the `Reactor.File` DSL extension.
+  A `chgrp` DSL entity for `Reactor.File` DSL extension.
   """
 
   alias Reactor.{Dsl.Argument, Dsl.WaitFor, Template}
@@ -8,27 +8,29 @@ defmodule Reactor.File.Dsl.Stat do
   defstruct __identifier__: nil,
             arguments: [],
             description: nil,
+            gid: nil,
             name: nil,
             path: nil,
-            time: :posix
+            revert_on_undo?: false
 
   @type t :: %__MODULE__{
           __identifier__: any,
           arguments: [Argument.t()],
           description: nil | String.t(),
+          gid: Template.t(),
           name: any,
           path: Template.t(),
-          time: :universal | :local | :posix
+          revert_on_undo?: boolean
         }
 
   @doc false
   def __entity__,
     do: %Spark.Dsl.Entity{
-      name: :stat,
+      name: :chgrp,
       describe: """
-      Returns information about a path.
+      Change the group of a file or directory.
 
-      See `File.stat/2` for more information.
+      Uses `File.chgrp/2` behind the scenes.
       """,
       target: __MODULE__,
       identifier: :name,
@@ -51,13 +53,18 @@ defmodule Reactor.File.Dsl.Stat do
         path: [
           type: Template.type(),
           required: true,
-          doc: "The path of the directory to create"
+          doc: "The path to the file or directory"
         ],
-        time: [
-          type: {:in, [:universal, :local, :posix]},
+        gid: [
+          type: Template.type(),
+          required: true,
+          doc: "The GID to set the file to"
+        ],
+        revert_on_undo?: [
+          type: :boolean,
           required: false,
-          default: :posix,
-          doc: "What format to return the file times in. See `File.stat/2` for more."
+          default: false,
+          doc: "Change the GID back to the original value on undo?"
         ]
       ]
     }
