@@ -1,8 +1,7 @@
-defmodule Reactor.File.Dsl.Cp do
+defmodule Reactor.File.Dsl.Ln do
   @moduledoc """
-  A `cp` DSL entity for the `Reactor.File` DSL extension.
+  A `ln` DSL entity for the `Reactor.File` DSL extension.
   """
-
   alias Reactor.{Dsl.Argument, Dsl.WaitFor, Template}
 
   defstruct __identifier__: nil,
@@ -11,8 +10,8 @@ defmodule Reactor.File.Dsl.Cp do
             overwrite?: true,
             name: nil,
             revert_on_undo?: false,
-            source: nil,
-            target: nil
+            existing: nil,
+            new: nil
 
   @type t :: %__MODULE__{
           __identifier__: any,
@@ -21,18 +20,18 @@ defmodule Reactor.File.Dsl.Cp do
           overwrite?: boolean,
           name: any,
           revert_on_undo?: boolean,
-          source: Template.t(),
-          target: Template.t()
+          existing: Template.t(),
+          new: Template.t()
         }
 
   @doc false
   def __entity__,
     do: %Spark.Dsl.Entity{
-      name: :cp,
+      name: :ln,
       describe: """
-      Copy the source file to the destination.
+      Create a hard link from `existing` to `new`.
 
-      Uses `File.cp/2` behind the scenes.
+      Uses `File.ln/2` behind the scenes.
       """,
       target: __MODULE__,
       identifier: :name,
@@ -52,28 +51,28 @@ defmodule Reactor.File.Dsl.Cp do
           required: false,
           doc: "An optional description for the step"
         ],
-        source: [
+        existing: [
           type: Template.type(),
           required: true,
-          doc: "The path to the source file"
+          doc: "The path to the existing file"
         ],
-        target: [
+        new: [
           type: Template.type(),
           required: true,
-          doc: "The path to the target file"
+          doc: "The path to the new file"
         ],
         overwrite?: [
           type: :boolean,
           required: false,
           default: true,
-          doc: "Whether or not to overwrite the target if it already exists"
+          doc: "Whether or not to overwrite the new if it already exists"
         ],
         revert_on_undo?: [
           type: :boolean,
           required: false,
           default: false,
           doc:
-            "Revert back to the initial state on undo (either by removing the target or by setting it back to it's original content)"
+            "Revert back to the initial state on undo (either by removing the new or by setting it back to it's original content)"
         ]
       ]
     }

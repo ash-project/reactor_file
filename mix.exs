@@ -71,7 +71,6 @@ defmodule Reactor.File.MixProject do
       docs: [
         "spark.cheat_sheets",
         "docs",
-        "spark.cheat_sheets_in_search",
         "spark.replace_doc_links"
       ],
       "spark.formatter": "spark.formatter --extensions Reactor.File",

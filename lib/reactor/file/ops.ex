@@ -61,6 +61,36 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.ln/2`"
+  def ln(existing, new, step, message \\ "Unable to create hard link") do
+    with {:error, reason} when FileError.is_posix(reason) <-
+           File.ln(existing, new) do
+      {:error,
+       FileError.exception(
+         action: {:ln, existing, new},
+         step: step,
+         message: message,
+         file: new,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.ln_s/2`"
+  def ln_s(existing, new, step, message \\ "Unable to create symbolic link") do
+    with {:error, reason} when FileError.is_posix(reason) <-
+           File.ln_s(existing, new) do
+      {:error,
+       FileError.exception(
+         action: {:ln_s, existing, new},
+         step: step,
+         message: message,
+         file: new,
+         reason: reason
+       )}
+    end
+  end
+
   @doc "An error wrapped version of `File.mkdir/1`"
   def mkdir(path, step, message \\ "Unable to create directory") do
     with {:error, reason} when FileError.is_posix(reason) <- File.mkdir(path) do

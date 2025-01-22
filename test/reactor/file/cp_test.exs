@@ -27,8 +27,7 @@ defmodule Reactor.File.CpTest do
     end
 
     test "when the target file already exists, it overwrites it", %{tmp_dir: tmp_dir} do
-      source_file = lorem_file(tmp_dir)
-      target_file = lorem_file(tmp_dir)
+      [source_file, target_file] = lorem_files(tmp_dir, how_many: 2)
 
       Reactor.run!(CpReactor, %{source: source_file, target: target_file})
       assert File.read!(source_file) == File.read!(target_file)
@@ -61,8 +60,7 @@ defmodule Reactor.File.CpTest do
     end
 
     test "when the target file already exists, it fails", %{tmp_dir: tmp_dir} do
-      source_file = lorem_file(tmp_dir)
-      target_file = lorem_file(tmp_dir)
+      [source_file, target_file] = lorem_files(tmp_dir, how_many: 2)
 
       assert {:error, error} =
                Reactor.run(CpNoOverwriteReactor, %{source: source_file, target: target_file})
@@ -91,8 +89,7 @@ defmodule Reactor.File.CpTest do
     end
 
     test "it backs up and reverts to the original file", %{tmp_dir: tmp_dir} do
-      source_file = lorem_file(tmp_dir)
-      target_file = lorem_file(tmp_dir)
+      [source_file, target_file] = lorem_files(tmp_dir, how_many: 2)
       original_content = File.read!(target_file)
 
       assert {:error, error} =

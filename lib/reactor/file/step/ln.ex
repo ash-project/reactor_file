@@ -1,14 +1,14 @@
-defmodule Reactor.File.Step.Cp do
+defmodule Reactor.File.Step.Ln do
   @arg_schema Spark.Options.new!(
-                source: [
+                existing: [
                   type: :string,
                   required: true,
-                  doc: "The path to the source file"
+                  doc: "The path to the existing file"
                 ],
-                target: [
+                new: [
                   type: :string,
                   required: true,
-                  doc: "The path to the target file"
+                  doc: "The path to the new file"
                 ]
               )
 
@@ -23,13 +23,17 @@ defmodule Reactor.File.Step.Cp do
                   type: :boolean,
                   required: false,
                   default: false,
-                  doc:
-                    "Revert back to the initial state on undo (either by removing the target or by setting it back to it's original content)"
+                  doc: "Revert back to the initial state on undo"
+                ],
+                symbolic?: [
+                  type: :boolean,
+                  required: false,
+                  default: false,
+                  doc: "Create a symbolic link instead of a hard link"
                 ]
               )
-
   @moduledoc """
-  A step which copies a file.
+  A step which creates a link from `existing` to `new`.
 
   ## Arguments
 
@@ -38,10 +42,6 @@ defmodule Reactor.File.Step.Cp do
   ## Options
 
   #{Spark.Options.docs(@opt_schema)}
-
-  ## Returns
-
-  A `Reactor.File.Step.FileCp.Result`
   """
   use Reactor.Step
   alias Reactor.File.OverwriteError
@@ -49,9 +49,8 @@ defmodule Reactor.File.Step.Cp do
 
   defmodule Result do
     @moduledoc """
-    The result of a file copying operation.
+    The result of the `ln` operation.
     """
-
     defstruct path: nil, before_stat: nil, after_stat: nil, original_file: nil, changed?: nil
 
     @type t :: %__MODULE__{
@@ -59,7 +58,7 @@ defmodule Reactor.File.Step.Cp do
             before_stat: File.Stat.t(),
             after_stat: File.Stat.t(),
             original_file: nil | Path.t(),
-            changed?: boolean
+            changed?: boolean()
           }
   end
 
@@ -68,17 +67,16 @@ defmodule Reactor.File.Step.Cp do
   def run(arguments, context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, options} <- Spark.Options.validate(options, @opt_schema),
-         target <- Keyword.fetch!(arguments, :target),
-         {:ok, before_stat} <- maybe_stat(target, [], context.current_step),
+         new <- Keyword.fetch!(arguments, :new),
+         {:ok, before_stat} <- maybe_stat(new, [], context.current_step),
+         {:ok, backup_file} <- maybe_backup_file(new, context, options[:revert_on_undo?]),
          :ok <-
-           check_overwrite_state(target, context.current_step, before_stat, options[:overwrite?]),
-         {:ok, backup_file} <-
-           maybe_backup_file(target, context, options[:revert_on_undo?]),
-         :ok <- cp(arguments[:source], target, context.current_step),
-         {:ok, after_stat} <- stat(target, [], context.current_step) do
+           check_overwrite_state(new, context.current_step, before_stat, options[:overwrite?]),
+         :ok <- do_ln(arguments[:existing], new, options[:symbolic?], context.current_step),
+         {:ok, after_stat} <- stat(new, [], context.current_step) do
       {:ok,
        %Result{
-         path: target,
+         path: new,
          before_stat: before_stat,
          original_file: backup_file,
          after_stat: after_stat,
@@ -110,13 +108,19 @@ defmodule Reactor.File.Step.Cp do
     end
   end
 
-  defp check_overwrite_state(_path, _step, _stat, true), do: :ok
   defp check_overwrite_state(_path, _step, nil, _overwrite?), do: :ok
 
-  defp check_overwrite_state(path, step, stat, false),
+  defp check_overwrite_state(path, step, stat, true) when is_struct(stat, File.Stat),
+    do: rm(path, step)
+
+  defp check_overwrite_state(path, step, stat, false) when is_struct(stat, File.Stat),
     do:
       {:error,
-       OverwriteError.exception(step: step, file: path, message: "#{stat.type} already exists")}
+       OverwriteError.exception(
+         step: step,
+         file: path,
+         message: "#{stat.type} already exists"
+       )}
 
   defp maybe_backup_file(path, context, undoable?) do
     if File.exists?(path) && undoable? do
@@ -126,7 +130,8 @@ defmodule Reactor.File.Step.Cp do
     end
   end
 
-  defp do_undo(result, step) when is_nil(result.original_file), do: rm(result.path, step)
+  defp do_undo(result, step) when is_nil(result.original_file),
+    do: rm(result.path, step)
 
   defp do_undo(result, step) do
     with :ok <- cp(result.original_file, result.path, step),
@@ -136,4 +141,7 @@ defmodule Reactor.File.Step.Cp do
       rm(result.original_file, step)
     end
   end
+
+  defp do_ln(existing, new, false, step), do: ln(existing, new, step)
+  defp do_ln(existing, new, true, step), do: ln_s(existing, new, step)
 end

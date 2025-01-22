@@ -13,6 +13,8 @@ defmodule Reactor.File do
           Reactor.File.Dsl.Chmod,
           Reactor.File.Dsl.Cp,
           Reactor.File.Dsl.Glob,
+          Reactor.File.Dsl.Ln,
+          Reactor.File.Dsl.LnS,
           Reactor.File.Dsl.Mkdir,
           Reactor.File.Dsl.MkdirP,
           Reactor.File.Dsl.Rmdir,
