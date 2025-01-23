@@ -51,13 +51,13 @@ defmodule Reactor.File.Step.Ln do
     @moduledoc """
     The result of the `ln` operation.
     """
-    defstruct path: nil, before_stat: nil, after_stat: nil, original_file: nil, changed?: nil
+    defstruct path: nil, before_stat: nil, after_stat: nil, original: nil, changed?: nil
 
     @type t :: %__MODULE__{
             path: Path.t(),
             before_stat: File.Stat.t(),
             after_stat: File.Stat.t(),
-            original_file: nil | Path.t(),
+            original: nil | Path.t(),
             changed?: boolean()
           }
   end
@@ -71,14 +71,14 @@ defmodule Reactor.File.Step.Ln do
          {:ok, before_stat} <- maybe_stat(new, [], context.current_step),
          {:ok, backup_file} <- maybe_backup_file(new, context, options[:revert_on_undo?]),
          :ok <-
-           check_overwrite_state(new, context.current_step, before_stat, options[:overwrite?]),
+           overwrite_check(new, context.current_step, before_stat, options[:overwrite?]),
          :ok <- do_ln(arguments[:existing], new, options[:symbolic?], context.current_step),
          {:ok, after_stat} <- stat(new, [], context.current_step) do
       {:ok,
        %Result{
          path: new,
          before_stat: before_stat,
-         original_file: backup_file,
+         original: backup_file,
          after_stat: after_stat,
          changed?: true
        }}
@@ -108,12 +108,12 @@ defmodule Reactor.File.Step.Ln do
     end
   end
 
-  defp check_overwrite_state(_path, _step, nil, _overwrite?), do: :ok
+  defp overwrite_check(_path, _step, nil, _overwrite?), do: :ok
 
-  defp check_overwrite_state(path, step, stat, true) when is_struct(stat, File.Stat),
+  defp overwrite_check(path, step, stat, true) when is_struct(stat, File.Stat),
     do: rm(path, step)
 
-  defp check_overwrite_state(path, step, stat, false) when is_struct(stat, File.Stat),
+  defp overwrite_check(path, step, stat, false) when is_struct(stat, File.Stat),
     do:
       {:error,
        OverwriteError.exception(
@@ -130,15 +130,15 @@ defmodule Reactor.File.Step.Ln do
     end
   end
 
-  defp do_undo(result, step) when is_nil(result.original_file),
+  defp do_undo(result, step) when is_nil(result.original),
     do: rm(result.path, step)
 
   defp do_undo(result, step) do
-    with :ok <- cp(result.original_file, result.path, step),
+    with :ok <- cp(result.original, result.path, step),
          :ok <- chown(result.path, result.before_stat.uid, step),
          :ok <- chgrp(result.path, result.before_stat.gid, step),
          :ok <- chmod(result.path, result.before_stat.mode, step) do
-      rm(result.original_file, step)
+      rm(result.original, step)
     end
   end
 

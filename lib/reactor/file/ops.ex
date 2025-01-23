@@ -61,6 +61,24 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.cp/2`"
+  def cp_r(source_path, destination_path, options, step, message \\ "Unable to copy file") do
+    case File.cp_r(source_path, destination_path, options) do
+      {:ok, _} ->
+        :ok
+
+      {:error, reason, fail_path} when FileError.is_posix(reason) ->
+        {:error,
+         FileError.exception(
+           action: {:cp_r, source_path, destination_path},
+           step: step,
+           message: message,
+           file: fail_path,
+           reason: reason
+         )}
+    end
+  end
+
   @doc "An error wrapped version of `File.ln/2`"
   def ln(existing, new, step, message \\ "Unable to create hard link") do
     with {:error, reason} when FileError.is_posix(reason) <-
@@ -135,15 +153,22 @@ defmodule Reactor.File.Ops do
 
   @doc "An error wrapped version of `File.rm_rf/1`"
   def rm_rf(path, step, message \\ "Unable to recursively delete") do
-    with {:error, reason, fail_path} when FileError.is_posix(reason) <- File.rm_rf(path) do
-      {:error,
-       FileError.exception(
-         action: {:rm_rf, path},
-         step: step,
-         message: message,
-         file: fail_path,
-         reason: reason
-       )}
+    case File.rm_rf(path) do
+      {:ok, _} ->
+        :ok
+
+      {:error, reason, fail_path} when FileError.is_posix(reason) ->
+        {:error,
+         FileError.exception(
+           action: {:rm_rf, path},
+           step: step,
+           message: message,
+           file: fail_path,
+           reason: reason
+         )}
+
+      {:error, reason, _} ->
+        {:error, reason}
     end
   end
 
@@ -198,4 +223,17 @@ defmodule Reactor.File.Ops do
 
   def backup_file(_path, context, message),
     do: {:error, MissingMiddlewareError.exception(message: message, step: context.current_step)}
+
+  @doc "Places a copy of a directory into the undo stash"
+  def backup_dir(path, context, message \\ "Unable to backup dir")
+
+  def backup_dir(path, %{Reactor.File.Middleware => %{tmp_dir: tmp_dir}} = context, message) do
+    backup_dir_name = {context.current_step, path} |> :erlang.phash2() |> Integer.to_string(16)
+    backup_path = Path.join(tmp_dir, backup_dir_name)
+
+    with :ok <- mkdir_p(backup_path, context.current_step, message),
+         :ok <- cp_r(path, backup_path, [], context.current_step, message) do
+      {:ok, backup_path}
+    end
+  end
 end

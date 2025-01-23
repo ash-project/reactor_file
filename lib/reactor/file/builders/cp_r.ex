@@ -1,0 +1,28 @@
+defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.CpR do
+  @moduledoc false
+  alias Reactor.{Argument, Builder}
+
+  @doc false
+  def build(step, reactor) do
+    arguments =
+      step.arguments
+      |> Enum.concat([
+        Argument.from_template(:source, step.source),
+        Argument.from_template(:target, step.target)
+      ])
+
+    Builder.add_step(
+      reactor,
+      step.name,
+      {Reactor.File.Step.CpR, overwrite?: step.overwrite?, revert_on_undo?: step.revert_on_undo?},
+      arguments,
+      ref: :step_name
+    )
+  end
+
+  @doc false
+  def verify(_, _), do: :ok
+
+  @doc false
+  def transform(_, dsl_state), do: {:ok, dsl_state}
+end

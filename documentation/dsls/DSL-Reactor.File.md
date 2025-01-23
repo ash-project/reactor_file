@@ -329,6 +329,87 @@ Target: `Reactor.File.Dsl.Cp`
 
 
 
+### reactor.cp_r
+```elixir
+cp_r name
+```
+
+
+Copy the source file or directories to the destination.
+
+Uses `File.cp_r/2` behind the scenes.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-cp_r-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-cp_r-name){: #reactor-cp_r-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`source`](#reactor-cp_r-source){: #reactor-cp_r-source .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the source file |
+| [`target`](#reactor-cp_r-target){: #reactor-cp_r-target .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the target file |
+| [`description`](#reactor-cp_r-description){: #reactor-cp_r-description } | `String.t` |  | An optional description for the step |
+| [`overwrite?`](#reactor-cp_r-overwrite?){: #reactor-cp_r-overwrite? } | `boolean` | `true` | Whether or not to overwrite the target if it already exists |
+| [`revert_on_undo?`](#reactor-cp_r-revert_on_undo?){: #reactor-cp_r-revert_on_undo? } | `boolean` | `false` | Revert back to the initial state on undo (either by removing the target or by setting it back to it's original content) |
+
+
+### reactor.cp_r.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-cp_r-wait_for-names){: #reactor-cp_r-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-cp_r-wait_for-description){: #reactor-cp_r-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.CpR`
+
+
+
 ### reactor.glob
 ```elixir
 glob name

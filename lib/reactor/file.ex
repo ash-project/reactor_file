@@ -12,6 +12,7 @@ defmodule Reactor.File do
           Reactor.File.Dsl.Chown,
           Reactor.File.Dsl.Chmod,
           Reactor.File.Dsl.Cp,
+          Reactor.File.Dsl.CpR,
           Reactor.File.Dsl.Glob,
           Reactor.File.Dsl.Ln,
           Reactor.File.Dsl.LnS,

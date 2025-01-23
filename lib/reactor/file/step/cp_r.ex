@@ -1,4 +1,4 @@
-defmodule Reactor.File.Step.Cp do
+defmodule Reactor.File.Step.CpR do
   @arg_schema Spark.Options.new!(
                 source: [
                   type: :string,
@@ -25,6 +25,13 @@ defmodule Reactor.File.Step.Cp do
                   default: false,
                   doc:
                     "Revert back to the initial state on undo (either by removing the target or by setting it back to it's original content)"
+                ],
+                dereference_symlinks?: [
+                  type: :boolean,
+                  required: false,
+                  default: false,
+                  doc:
+                    " By default, this function will copy symlinks by creating symlinks that point to the same location. This option forces symlinks to be dereferenced and have their contents copied instead when set to true. If the dereferenced files do not exist, than the operation fails."
                 ]
               )
 
@@ -41,7 +48,7 @@ defmodule Reactor.File.Step.Cp do
 
   ## Returns
 
-  A `Reactor.File.Step.Cp.Result`
+  A `Reactor.File.Step.CpR.Result`
   """
   use Reactor.Step
   alias Reactor.File.OverwriteError
@@ -68,12 +75,21 @@ defmodule Reactor.File.Step.Cp do
   def run(arguments, context, options) do
     with {:ok, arguments} <- Spark.Options.validate(Enum.to_list(arguments), @arg_schema),
          {:ok, options} <- Spark.Options.validate(options, @opt_schema),
+         source <- Keyword.fetch!(arguments, :source),
          target <- Keyword.fetch!(arguments, :target),
          {:ok, before_stat} <- maybe_stat(target, [], context.current_step),
          :ok <-
-           overwrite_check(target, context.current_step, before_stat, options[:overwrite?]),
-         {:ok, backup_file} <- maybe_backup(target, context, options[:revert_on_undo?]),
-         :ok <- cp(arguments[:source], target, context.current_step),
+           overwrite_check(
+             source,
+             target,
+             before_stat,
+             context.current_step,
+             options[:overwrite?]
+           ),
+         {:ok, backup_file} <-
+           maybe_backup(target, context, options[:revert_on_undo?]),
+         cp_opts <- cp_ops(options),
+         :ok <- cp_r(source, target, cp_opts, context.current_step),
          {:ok, after_stat} <- stat(target, [], context.current_step) do
       {:ok,
        %Result{
@@ -109,30 +125,80 @@ defmodule Reactor.File.Step.Cp do
     end
   end
 
-  defp overwrite_check(_path, _step, _stat, true), do: :ok
-  defp overwrite_check(_path, _step, nil, _overwrite?), do: :ok
+  defp cp_ops(options) do
+    [
+      dereference_symlinks: options[:dereference_symlinks?]
+    ]
+  end
 
-  defp overwrite_check(path, step, stat, false),
-    do:
-      {:error,
-       OverwriteError.exception(step: step, file: path, message: "#{stat.type} already exists")}
+  defp maybe_backup(path, context, true) do
+    cond do
+      File.regular?(path) ->
+        backup_file(path, context)
 
-  defp maybe_backup(path, context, undoable?) do
-    if File.exists?(path) && undoable? do
-      backup_file(path, context)
-    else
-      {:ok, nil}
+      File.dir?(path) ->
+        backup_dir(path, context)
+
+      true ->
+        {:ok, nil}
     end
   end
 
-  defp do_undo(result, step) when is_nil(result.original), do: rm(result.path, step)
+  defp maybe_backup(_path, _context, _undoable?), do: {:ok, nil}
+
+  # defp overwrite_check(source, target, before_stat, step, overwrite?)
+  defp overwrite_check(_source, _target, nil, _step, _overwrite?), do: :ok
+  defp overwrite_check(_source, _target, _stat, _step, true), do: :ok
+
+  defp overwrite_check(source, target, %{type: :directory}, step, false) do
+    if File.dir?(source) do
+      recursive_overwrite_check(source, target, step)
+    else
+      {:error,
+       OverwriteError.exception(step: step, file: target, message: "directory already exists")}
+    end
+  end
+
+  defp overwrite_check(_source, target, stat, step, false),
+    do:
+      {:error,
+       OverwriteError.exception(step: step, file: target, message: "#{stat.type} already exists")}
+
+  defp recursive_overwrite_check(source, target, step) do
+    source
+    |> Path.join("**/*")
+    |> Path.wildcard(match_dot: true)
+    |> Enum.reduce_while(:ok, fn source_file, :ok ->
+      target_file =
+        source_file
+        |> Path.relative_to(source)
+        |> then(&Path.join(target, &1))
+
+      case File.stat(target_file) do
+        {:ok, stat} ->
+          {:halt,
+           {:error,
+            OverwriteError.exception(
+              step: step,
+              file: target_file,
+              message: "#{stat.type} already exists"
+            )}}
+
+        {:error, _} ->
+          {:cont, :ok}
+      end
+    end)
+  end
+
+  defp do_undo(result, step) when is_nil(result.original), do: rm_rf(result.path, step)
 
   defp do_undo(result, step) do
-    with :ok <- cp(result.original, result.path, step),
+    with :ok <- rm_rf(result.path, step),
+         :ok <- cp_r(result.original, result.path, [], step),
          :ok <- chown(result.path, result.before_stat.uid, step),
          :ok <- chgrp(result.path, result.before_stat.gid, step),
          :ok <- chmod(result.path, result.before_stat.mode, step) do
-      rm(result.original, step)
+      rm_rf(result.original, step)
     end
   end
 end
