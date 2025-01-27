@@ -651,6 +651,89 @@ Target: `Reactor.File.Dsl.LnS`
 
 
 
+### reactor.lstat
+```elixir
+lstat name
+```
+
+
+Returns information about a path.
+
+If the file is a symlink, sets the type to `:symlink` and returns a
+`File.Stat` struct for the link. For any other file, returns exactly the
+same values as `stat`.
+
+See `File.lstat/2` for more information.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-lstat-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-lstat-name){: #reactor-lstat-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-lstat-path){: #reactor-lstat-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path of the directory to create |
+| [`description`](#reactor-lstat-description){: #reactor-lstat-description } | `String.t` |  | An optional description for the step |
+| [`time`](#reactor-lstat-time){: #reactor-lstat-time } | `:universal \| :local \| :posix` | `:posix` | What format to return the file times in. See `File.stat/2` for more. |
+
+
+### reactor.lstat.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-lstat-wait_for-names){: #reactor-lstat-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-lstat-wait_for-description){: #reactor-lstat-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.Lstat`
+
+
+
 ### reactor.mkdir
 ```elixir
 mkdir name
@@ -806,6 +889,84 @@ Target: `Reactor.Dsl.WaitFor`
 ### Introspection
 
 Target: `Reactor.File.Dsl.MkdirP`
+
+
+
+### reactor.read_link
+```elixir
+read_link name
+```
+
+
+Reads a symbolic link.
+
+Uses `File.read_link/1` behind the scenes.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-read_link-wait_for)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-read_link-name){: #reactor-read_link-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-read_link-path){: #reactor-read_link-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the link to read |
+| [`description`](#reactor-read_link-description){: #reactor-read_link-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.read_link.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-read_link-wait_for-names){: #reactor-read_link-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-read_link-wait_for-description){: #reactor-read_link-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.ReadLink`
 
 
 

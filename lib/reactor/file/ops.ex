@@ -109,6 +109,20 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.lstat/2`"
+  def lstat(path, opts, step, message \\ "Unable to retrieve file information") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.lstat(path, opts) do
+      {:error,
+       FileError.exception(
+         action: :lstat,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
   @doc "An error wrapped version of `File.mkdir/1`"
   def mkdir(path, step, message \\ "Unable to create directory") do
     with {:error, reason} when FileError.is_posix(reason) <- File.mkdir(path) do
@@ -129,6 +143,20 @@ defmodule Reactor.File.Ops do
       {:error,
        FileError.exception(
          action: :mkdir_p,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.lstat/2`"
+  def read_link(path, step, message \\ "Unable to read link") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.read_link(path) do
+      {:error,
+       FileError.exception(
+         action: :read_link,
          step: step,
          message: message,
          file: path,
