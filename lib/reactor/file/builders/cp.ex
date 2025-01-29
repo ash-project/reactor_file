@@ -16,6 +16,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Cp do
       step.name,
       {Reactor.File.Step.Cp, overwrite?: step.overwrite?, revert_on_undo?: step.revert_on_undo?},
       arguments,
+      guards: step.guards,
       ref: :step_name
     )
   end

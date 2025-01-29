@@ -9,6 +9,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.ReadLink do
       step.name,
       Reactor.File.Step.ReadLink,
       [Argument.from_template(:path, step.path) | step.arguments],
+      guards: step.guards,
       ref: :step_name
     )
   end

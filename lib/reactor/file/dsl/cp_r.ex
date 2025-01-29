@@ -3,11 +3,12 @@ defmodule Reactor.File.Dsl.CpR do
   A `cp_r` DSL entity for the `Reactor.File` DSL extension.
   """
 
-  alias Reactor.{Dsl.Argument, Dsl.WaitFor, Template}
+  alias Reactor.{Dsl.Argument, Dsl.Guard, Dsl.WaitFor, Dsl.Where, Template}
 
   defstruct __identifier__: nil,
             arguments: [],
             description: nil,
+            guards: [],
             overwrite?: true,
             name: nil,
             revert_on_undo?: false,
@@ -18,6 +19,7 @@ defmodule Reactor.File.Dsl.CpR do
           __identifier__: any,
           arguments: [Argument.t()],
           description: nil | String.t(),
+          guards: [Reactor.Guard.Build.t()],
           overwrite?: boolean,
           name: any,
           revert_on_undo?: boolean,
@@ -38,7 +40,10 @@ defmodule Reactor.File.Dsl.CpR do
       identifier: :name,
       args: [:name],
       recursive_as: :steps,
-      entities: [arguments: [WaitFor.__entity__()]],
+      entities: [
+        arguments: [WaitFor.__entity__()],
+        guards: [Guard.__entity__(), Where.__entity__()]
+      ],
       imports: [Argument],
       schema: [
         name: [

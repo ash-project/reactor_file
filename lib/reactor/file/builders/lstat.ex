@@ -9,6 +9,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Lstat do
       step.name,
       {Reactor.File.Step.Lstat, time: step.time},
       [Argument.from_template(:path, step.path) | step.arguments],
+      guards: step.guards,
       ref: :step_name
     )
   end

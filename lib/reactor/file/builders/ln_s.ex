@@ -17,6 +17,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.LnS do
       {Reactor.File.Step.Ln,
        symbolic?: true, overwrite?: step.overwrite?, revert_on_undo?: step.revert_on_undo?},
       arguments,
+      guards: step.guards,
       ref: :step_name
     )
   end

@@ -3,11 +3,12 @@ defmodule Reactor.File.Dsl.Stat do
   A `stat` DSL entity for the `Reactor.File` DSL extension.
   """
 
-  alias Reactor.{Dsl.Argument, Dsl.WaitFor, Template}
+  alias Reactor.{Dsl.Argument, Dsl.Guard, Dsl.WaitFor, Dsl.Where, Template}
 
   defstruct __identifier__: nil,
             arguments: [],
             description: nil,
+            guards: [],
             name: nil,
             path: nil,
             time: :posix
@@ -16,6 +17,7 @@ defmodule Reactor.File.Dsl.Stat do
           __identifier__: any,
           arguments: [Argument.t()],
           description: nil | String.t(),
+          guards: [Reactor.Guard.Build.t()],
           name: any,
           path: Template.t(),
           time: :universal | :local | :posix
@@ -34,7 +36,10 @@ defmodule Reactor.File.Dsl.Stat do
       identifier: :name,
       args: [:name],
       recursive_as: :steps,
-      entities: [arguments: [WaitFor.__entity__()]],
+      entities: [
+        arguments: [WaitFor.__entity__()],
+        guards: [Guard.__entity__(), Where.__entity__()]
+      ],
       imports: [Argument],
       schema: [
         name: [

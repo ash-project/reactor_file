@@ -9,6 +9,7 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Rmdir do
       step.name,
       {Reactor.File.Step.Rmdir, revert_on_undo?: step.revert_on_undo?},
       [Argument.from_template(:path, step.path) | step.arguments],
+      guards: step.guards,
       ref: :step_name
     )
   end
