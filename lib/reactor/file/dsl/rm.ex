@@ -30,7 +30,7 @@ defmodule Reactor.File.Dsl.Rm do
       describe: """
       Removes a file.
 
-      Uses `File.rm/1` behind the scenes.
+      Uses `File.rm/1`.
       """,
       target: __MODULE__,
       identifier: :name,

@@ -33,7 +33,7 @@ defmodule Reactor.File.Dsl.LnS do
       describe: """
       Create a symbolic link from `existing` to `new`.
 
-      Uses `File.ln_s/2` behind the scenes.
+      Uses `File.ln_s/2`.
       """,
       target: __MODULE__,
       identifier: :name,

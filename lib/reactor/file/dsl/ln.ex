@@ -33,7 +33,7 @@ defmodule Reactor.File.Dsl.Ln do
       describe: """
       Create a hard link from `existing` to `new`.
 
-      Uses `File.ln/2` behind the scenes.
+      Uses `File.ln/2`.
       """,
       target: __MODULE__,
       identifier: :name,

@@ -1,6 +1,6 @@
-defmodule Reactor.File.Dsl.Chgrp do
+defmodule Reactor.File.Dsl.Touch do
   @moduledoc """
-  A `chgrp` DSL entity for the `Reactor.File` DSL extension.
+  A `touch` DSL entity for the `Reactor.File` DSL extension.
   """
 
   alias Reactor.{Dsl.Argument, Dsl.Guard, Dsl.WaitFor, Dsl.Where, Template}
@@ -8,31 +8,30 @@ defmodule Reactor.File.Dsl.Chgrp do
   defstruct __identifier__: nil,
             arguments: [],
             description: nil,
-            gid: nil,
             guards: [],
             name: nil,
             path: nil,
-            revert_on_undo?: false
+            revert_on_undo?: false,
+            time: nil
 
   @type t :: %__MODULE__{
           __identifier__: any,
           arguments: [Argument.t()],
           description: nil | String.t(),
-          gid: Template.t(),
           guards: [Reactor.Guard.Build.t()],
           name: any,
           path: Template.t(),
-          revert_on_undo?: boolean
+          revert_on_undo?: boolean,
+          time: Template.t()
         }
-
   @doc false
   def __entity__,
     do: %Spark.Dsl.Entity{
-      name: :chgrp,
+      name: :touch,
       describe: """
-      Change the group of a file or directory.
+      Update the mtime and atime of a file.
 
-      Uses `File.chgrp/2`.
+      Uses `File.touch/2`.
       """,
       target: __MODULE__,
       identifier: :name,
@@ -58,18 +57,18 @@ defmodule Reactor.File.Dsl.Chgrp do
         path: [
           type: Template.type(),
           required: true,
-          doc: "The path to the file or directory"
+          doc: "The path of the directory to remove"
         ],
-        gid: [
+        time: [
           type: Template.type(),
-          required: true,
-          doc: "The GID to set the file group to"
+          required: false,
+          doc: "The time to change the file to."
         ],
         revert_on_undo?: [
           type: :boolean,
           required: false,
           default: false,
-          doc: "Change the GID back to the original value on undo?"
+          doc: "Recreate the directory if the Reactor is undoing changes"
         ]
       ]
     }

@@ -19,7 +19,7 @@ defmodule Reactor.File.Dsl.Rmdir do
           description: nil | String.t(),
           guards: [Reactor.Guard.Build.t()],
           name: any,
-          path: Path.t(),
+          path: Template.t(),
           revert_on_undo?: boolean
         }
 
@@ -30,7 +30,7 @@ defmodule Reactor.File.Dsl.Rmdir do
       describe: """
       Removes a directory.
 
-      Uses `File.rmdir/1` behind the scenes.
+      Uses `File.rmdir/1`.
       """,
       target: __MODULE__,
       identifier: :name,

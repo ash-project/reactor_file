@@ -228,6 +228,20 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.touch/2`"
+  def touch(path, time, step, message \\ "Unable to touch file") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.touch(path, time) do
+      {:error,
+       FileError.exception(
+         action: {:touch, time},
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
   @doc "An error wrapped version of `File.write_stat/2`"
   def write_stat(path, stat, opts, step, message \\ "Unable to write file information") do
     with {:error, reason} when FileError.is_posix(reason) <- File.write_stat(path, stat, opts) do

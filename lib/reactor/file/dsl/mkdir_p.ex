@@ -30,7 +30,7 @@ defmodule Reactor.File.Dsl.MkdirP do
       describe: """
       Creates a directory and any intermediate directories which also must be created.
 
-      Uses `File.mkdir_p/1` behind the scenes.
+      Uses `File.mkdir_p/1`.
       """,
       target: __MODULE__,
       identifier: :name,

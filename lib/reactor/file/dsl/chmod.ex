@@ -32,7 +32,7 @@ defmodule Reactor.File.Dsl.Chmod do
       describe: """
       Change the permissions of a file or directory.
 
-      Uses `File.chmod/2` behind the scenes.
+      Uses `File.chmod/2`.
       """,
       target: __MODULE__,
       identifier: :name,

@@ -16,7 +16,7 @@ chgrp name
 
 Change the group of a file or directory.
 
-Uses `File.chgrp/2` behind the scenes.
+Uses `File.chgrp/2`.
 
 
 ### Nested DSLs
@@ -194,7 +194,7 @@ chown name
 
 Change the owner of a file or directory.
 
-Uses `File.chown/2` behind the scenes.
+Uses `File.chown/2`.
 
 
 ### Nested DSLs
@@ -372,7 +372,7 @@ chmod name
 
 Change the permissions of a file or directory.
 
-Uses `File.chmod/2` behind the scenes.
+Uses `File.chmod/2`.
 
 
 ### Nested DSLs
@@ -550,7 +550,7 @@ cp name
 
 Copy the source file to the destination.
 
-Uses `File.cp/2` behind the scenes.
+Uses `File.cp/2`.
 
 
 ### Nested DSLs
@@ -729,7 +729,7 @@ cp_r name
 
 Copy the source file or directories to the destination.
 
-Uses `File.cp_r/2` behind the scenes.
+Uses `File.cp_r/2`.
 
 
 ### Nested DSLs
@@ -1085,7 +1085,7 @@ ln name
 
 Create a hard link from `existing` to `new`.
 
-Uses `File.ln/2` behind the scenes.
+Uses `File.ln/2`.
 
 
 ### Nested DSLs
@@ -1264,7 +1264,7 @@ ln_s name
 
 Create a symbolic link from `existing` to `new`.
 
-Uses `File.ln_s/2` behind the scenes.
+Uses `File.ln_s/2`.
 
 
 ### Nested DSLs
@@ -1624,7 +1624,7 @@ mkdir name
 
 Creates a directory.
 
-Uses `File.mkdir/1` behind the scenes.
+Uses `File.mkdir/1`.
 
 
 ### Nested DSLs
@@ -1801,7 +1801,7 @@ mkdir_p name
 
 Creates a directory and any intermediate directories which also must be created.
 
-Uses `File.mkdir_p/1` behind the scenes.
+Uses `File.mkdir_p/1`.
 
 
 ### Nested DSLs
@@ -1978,7 +1978,7 @@ read_link name
 
 Reads a symbolic link.
 
-Uses `File.read_link/1` behind the scenes.
+Uses `File.read_link/1`.
 
 
 ### Nested DSLs
@@ -2154,7 +2154,7 @@ rm name
 
 Removes a file.
 
-Uses `File.rm/1` behind the scenes.
+Uses `File.rm/1`.
 
 
 ### Nested DSLs
@@ -2331,7 +2331,7 @@ rmdir name
 
 Removes a directory.
 
-Uses `File.rmdir/1` behind the scenes.
+Uses `File.rmdir/1`.
 
 
 ### Nested DSLs
@@ -2674,6 +2674,184 @@ Target: `Reactor.Dsl.Where`
 ### Introspection
 
 Target: `Reactor.File.Dsl.Stat`
+
+
+
+### reactor.touch
+```elixir
+touch name
+```
+
+
+Update the mtime and atime of a file.
+
+Uses `File.touch/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-touch-wait_for)
+ * [guard](#reactor-touch-guard)
+ * [where](#reactor-touch-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-touch-name){: #reactor-touch-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-touch-path){: #reactor-touch-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path of the directory to remove |
+| [`description`](#reactor-touch-description){: #reactor-touch-description } | `String.t` |  | An optional description for the step |
+| [`time`](#reactor-touch-time){: #reactor-touch-time } | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The time to change the file to. |
+| [`revert_on_undo?`](#reactor-touch-revert_on_undo?){: #reactor-touch-revert_on_undo? } | `boolean` | `false` | Recreate the directory if the Reactor is undoing changes |
+
+
+### reactor.touch.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-touch-wait_for-names){: #reactor-touch-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-touch-wait_for-description){: #reactor-touch-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.touch.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-touch-guard-fun){: #reactor-touch-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-touch-guard-description){: #reactor-touch-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.touch.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-touch-where-predicate){: #reactor-touch-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-touch-where-description){: #reactor-touch-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.Touch`
 
 
 

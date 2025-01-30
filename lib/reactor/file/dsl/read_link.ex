@@ -28,7 +28,7 @@ defmodule Reactor.File.Dsl.ReadLink do
       describe: """
       Reads a symbolic link.
 
-      Uses `File.read_link/1` behind the scenes.
+      Uses `File.read_link/1`.
       """,
       target: __MODULE__,
       identifier: :name,

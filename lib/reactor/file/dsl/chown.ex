@@ -32,7 +32,7 @@ defmodule Reactor.File.Dsl.Chown do
       describe: """
       Change the owner of a file or directory.
 
-      Uses `File.chown/2` behind the scenes.
+      Uses `File.chown/2`.
       """,
       target: __MODULE__,
       identifier: :name,

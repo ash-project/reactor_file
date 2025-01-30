@@ -34,7 +34,7 @@ defmodule Reactor.File.Dsl.Cp do
       describe: """
       Copy the source file to the destination.
 
-      Uses `File.cp/2` behind the scenes.
+      Uses `File.cp/2`.
       """,
       target: __MODULE__,
       identifier: :name,

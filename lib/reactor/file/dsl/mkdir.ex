@@ -30,7 +30,7 @@ defmodule Reactor.File.Dsl.Mkdir do
       describe: """
       Creates a directory.
 
-      Uses `File.mkdir/1` behind the scenes.
+      Uses `File.mkdir/1`.
       """,
       target: __MODULE__,
       identifier: :name,
