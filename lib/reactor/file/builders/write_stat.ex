@@ -1,4 +1,4 @@
-defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.MkdirP do
+defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.WriteStat do
   @moduledoc false
   alias Reactor.{Argument, Builder}
 
@@ -7,8 +7,11 @@ defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.MkdirP do
     Builder.add_step(
       reactor,
       step.name,
-      {Reactor.File.Step.MkdirP, revert_on_undo?: step.revert_on_undo?},
-      [Argument.from_template(:path, step.path) | step.arguments],
+      {Reactor.File.Step.Rm, revert_on_undo?: step.revert_on_undo?, time: step.time},
+      [
+        Argument.from_template(:path, step.path),
+        Argument.from_template(:stat, step.stat) | step.arguments
+      ],
       guards: step.guards,
       ref: :step_name
     )

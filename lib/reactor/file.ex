@@ -22,7 +22,8 @@ defmodule Reactor.File do
           Reactor.File.Dsl.ReadLink,
           Reactor.File.Dsl.Rm,
           Reactor.File.Dsl.Rmdir,
-          Reactor.File.Dsl.Stat
+          Reactor.File.Dsl.Stat,
+          Reactor.File.Dsl.WriteStat
         ],
         &%Spark.Dsl.Patch.AddEntity{
           section_path: [:reactor],

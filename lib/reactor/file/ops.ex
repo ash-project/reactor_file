@@ -228,6 +228,20 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.write_stat/2`"
+  def write_stat(path, stat, opts, step, message \\ "Unable to write file information") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.write_stat(path, stat, opts) do
+      {:error,
+       FileError.exception(
+         action: {:write_stat, stat},
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
   @doc "A stat which doesn't fail when the file doesn't exist"
   def maybe_stat(path, opts, step, message \\ "Unable to retrieve file information") do
     if File.exists?(path) do

@@ -1,4 +1,4 @@
-defmodule Reactor.File.Step.Ln do
+defmodule Reactor.File.Step.LnS do
   @moduledoc false
   use Reactor.File.Step,
     arg_schema: [
@@ -33,7 +33,7 @@ defmodule Reactor.File.Step.Ln do
 
   defmodule Result do
     @moduledoc """
-    The result of the `ln` operation.
+    The result of the `ln_s` operation.
     """
     defstruct path: nil, before_stat: nil, after_stat: nil, original: nil, changed?: nil
 
@@ -54,7 +54,7 @@ defmodule Reactor.File.Step.Ln do
            maybe_backup_file(arguments.new, context, options[:revert_on_undo?]),
          :ok <-
            overwrite_check(arguments.new, context.current_step, before_stat, options[:overwrite?]),
-         :ok <- ln(arguments.existing, arguments.new, context.current_step),
+         :ok <- ln_s(arguments.existing, arguments.new, context.current_step),
          {:ok, after_stat} <- stat(arguments.new, [], context.current_step) do
       {:ok,
        %Result{

@@ -1,16 +1,16 @@
-defmodule Reactor.File.Step.Chgrp do
+defmodule Reactor.File.Step.WriteStat do
   @moduledoc false
   use Reactor.File.Step,
     arg_schema: [
-      gid: [
-        type: :pos_integer,
-        required: true,
-        doc: "The GID to change the file to"
-      ],
       path: [
         type: :string,
         required: true,
-        doc: "The path of the file to change"
+        doc: "The path to modify"
+      ],
+      stat: [
+        type: {:struct, File.Stat},
+        required: true,
+        doc: "The stat to write"
       ]
     ],
     opt_schema: [
@@ -18,16 +18,16 @@ defmodule Reactor.File.Step.Chgrp do
         type: :boolean,
         required: false,
         default: false,
-        doc: "Change the GID back to the original value on undo?"
+        doc: "Revert to the original state if the Reactor is undoing changes"
       ]
     ],
-    moduledoc: "A step which calls `File.chgrp/2`."
+    moduledoc: "A step which calls `File.write_stat/2`"
 
   defmodule Result do
     @moduledoc """
-    The result of a `chgrp` step.
+    The result of a `write_stat` step.
 
-    Contains the path being changed, and the stats before and after the change.
+    Returns the path that was modified, plus the before and after stats.
     """
     defstruct path: nil, before_stat: nil, after_stat: nil, changed?: nil
 
@@ -41,16 +41,22 @@ defmodule Reactor.File.Step.Chgrp do
 
   @doc false
   @impl true
-  def mutate(arguments, context, _options) do
+  def mutate(arguments, context, options) do
     with {:ok, before_stat} <- stat(arguments.path, [], context.current_step),
-         :ok <- chgrp(arguments.path, arguments.gid, context.current_step),
+         :ok <-
+           write_stat(
+             arguments.path,
+             arguments.stat,
+             [time: options[:time]],
+             context.current_step
+           ),
          {:ok, after_stat} <- stat(arguments.path, [], context.current_step) do
       {:ok,
        %Result{
          path: arguments.path,
          before_stat: before_stat,
          after_stat: after_stat,
-         changed?: before_stat.gid != after_stat.gid
+         changed?: before_stat != after_stat
        }}
     end
   end
@@ -58,6 +64,6 @@ defmodule Reactor.File.Step.Chgrp do
   @doc false
   @impl true
   def revert(result, context, _options) do
-    chgrp(result.path, result.before_stat.gid, context.current_step)
+    write_stat(result.path, result.before_state, [], context.current_step)
   end
 end
