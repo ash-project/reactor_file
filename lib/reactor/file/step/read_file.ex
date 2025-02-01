@@ -1,0 +1,19 @@
+defmodule Reactor.File.Step.ReadFile do
+  @moduledoc false
+  use Reactor.File.Step,
+    arg_schema: [
+      path: [
+        type: :string,
+        required: true,
+        doc: "The path of the file to read"
+      ]
+    ],
+    opt_schema: [],
+    moduledoc: "A step which runs `File.read/1`"
+
+  @doc false
+  @impl true
+  def mutate(arguments, context, _options) do
+    read_file(arguments.path, context.current_step)
+  end
+end

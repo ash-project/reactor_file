@@ -151,6 +151,20 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.read/1`"
+  def read_file(path, step, message \\ "Unable to read file") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.read(path) do
+      {:error,
+       FileError.exception(
+         action: :read_file,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
   @doc "An error wrapped version of `File.lstat/2`"
   def read_link(path, step, message \\ "Unable to read link") do
     with {:error, reason} when FileError.is_posix(reason) <- File.read_link(path) do
