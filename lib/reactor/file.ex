@@ -25,6 +25,7 @@ defmodule Reactor.File do
           Reactor.File.Dsl.Rmdir,
           Reactor.File.Dsl.Stat,
           Reactor.File.Dsl.Touch,
+          Reactor.File.Dsl.WriteFile,
           Reactor.File.Dsl.WriteStat
         ],
         &%Spark.Dsl.Patch.AddEntity{
