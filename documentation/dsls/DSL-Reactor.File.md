@@ -542,6 +542,182 @@ Target: `Reactor.File.Dsl.Chmod`
 
 
 
+### reactor.close_file
+```elixir
+close_file name
+```
+
+
+Closes a file.
+
+Uses `File.close/1`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-close_file-wait_for)
+ * [guard](#reactor-close_file-guard)
+ * [where](#reactor-close_file-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-close_file-name){: #reactor-close_file-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`device`](#reactor-close_file-device){: #reactor-close_file-device .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The IO device to close |
+| [`description`](#reactor-close_file-description){: #reactor-close_file-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.close_file.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-close_file-wait_for-names){: #reactor-close_file-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-close_file-wait_for-description){: #reactor-close_file-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.close_file.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-close_file-guard-fun){: #reactor-close_file-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-close_file-guard-description){: #reactor-close_file-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.close_file.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-close_file-where-predicate){: #reactor-close_file-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-close_file-where-description){: #reactor-close_file-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.CloseFile`
+
+
+
 ### reactor.cp
 ```elixir
 cp name
@@ -1074,6 +1250,891 @@ Target: `Reactor.Dsl.Where`
 ### Introspection
 
 Target: `Reactor.File.Dsl.Glob`
+
+
+
+### reactor.io_binread
+```elixir
+io_binread name
+```
+
+
+Reads from an IO device.
+
+Uses `IO.binread/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-io_binread-wait_for)
+ * [guard](#reactor-io_binread-guard)
+ * [where](#reactor-io_binread-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-io_binread-name){: #reactor-io_binread-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`device`](#reactor-io_binread-device){: #reactor-io_binread-device .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The IO device to read from |
+| [`line_or_chars`](#reactor-io_binread-line_or_chars){: #reactor-io_binread-line_or_chars .spark-required} | `:eof \| :line \| non_neg_integer` |  | Controls how the device is iterated. |
+| [`description`](#reactor-io_binread-description){: #reactor-io_binread-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.io_binread.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-io_binread-wait_for-names){: #reactor-io_binread-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_binread-wait_for-description){: #reactor-io_binread-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.io_binread.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-io_binread-guard-fun){: #reactor-io_binread-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_binread-guard-description){: #reactor-io_binread-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.io_binread.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-io_binread-where-predicate){: #reactor-io_binread-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_binread-where-description){: #reactor-io_binread-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.IoBinRead`
+
+
+
+### reactor.io_binstream
+```elixir
+io_binstream name
+```
+
+
+Streams from an IO device.
+
+Uses `IO.binstream/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-io_binstream-wait_for)
+ * [guard](#reactor-io_binstream-guard)
+ * [where](#reactor-io_binstream-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-io_binstream-name){: #reactor-io_binstream-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`device`](#reactor-io_binstream-device){: #reactor-io_binstream-device .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The IO device to read from |
+| [`line_or_bytes`](#reactor-io_binstream-line_or_bytes){: #reactor-io_binstream-line_or_bytes .spark-required} | `:line \| non_neg_integer` |  | Controls how the stream is iterated. |
+| [`description`](#reactor-io_binstream-description){: #reactor-io_binstream-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.io_binstream.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-io_binstream-wait_for-names){: #reactor-io_binstream-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_binstream-wait_for-description){: #reactor-io_binstream-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.io_binstream.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-io_binstream-guard-fun){: #reactor-io_binstream-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_binstream-guard-description){: #reactor-io_binstream-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.io_binstream.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-io_binstream-where-predicate){: #reactor-io_binstream-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_binstream-where-description){: #reactor-io_binstream-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.IoBinStream`
+
+
+
+### reactor.io_read
+```elixir
+io_read name
+```
+
+
+Reads from an IO device
+
+Uses `IO.read/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-io_read-wait_for)
+ * [guard](#reactor-io_read-guard)
+ * [where](#reactor-io_read-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-io_read-name){: #reactor-io_read-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`device`](#reactor-io_read-device){: #reactor-io_read-device .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The IO device to read from |
+| [`line_or_chars`](#reactor-io_read-line_or_chars){: #reactor-io_read-line_or_chars .spark-required} | `:eof \| :line \| non_neg_integer` |  | Controls how the device is iterated. |
+| [`description`](#reactor-io_read-description){: #reactor-io_read-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.io_read.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-io_read-wait_for-names){: #reactor-io_read-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_read-wait_for-description){: #reactor-io_read-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.io_read.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-io_read-guard-fun){: #reactor-io_read-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_read-guard-description){: #reactor-io_read-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.io_read.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-io_read-where-predicate){: #reactor-io_read-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_read-where-description){: #reactor-io_read-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.IoRead`
+
+
+
+### reactor.io_stream
+```elixir
+io_stream name
+```
+
+
+Streams from an IO device.
+
+Uses `IO.stream/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-io_stream-wait_for)
+ * [guard](#reactor-io_stream-guard)
+ * [where](#reactor-io_stream-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-io_stream-name){: #reactor-io_stream-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`device`](#reactor-io_stream-device){: #reactor-io_stream-device .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The IO device to read from |
+| [`line_or_codepoints`](#reactor-io_stream-line_or_codepoints){: #reactor-io_stream-line_or_codepoints .spark-required} | `:line \| non_neg_integer` |  | Controls how the stream is iterated. |
+| [`description`](#reactor-io_stream-description){: #reactor-io_stream-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.io_stream.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-io_stream-wait_for-names){: #reactor-io_stream-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_stream-wait_for-description){: #reactor-io_stream-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.io_stream.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-io_stream-guard-fun){: #reactor-io_stream-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_stream-guard-description){: #reactor-io_stream-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.io_stream.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-io_stream-where-predicate){: #reactor-io_stream-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_stream-where-description){: #reactor-io_stream-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.IoStream`
+
+
+
+### reactor.io_write
+```elixir
+io_write name
+```
+
+
+Writes to an IO device
+
+Uses `IO.write/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-io_write-wait_for)
+ * [guard](#reactor-io_write-guard)
+ * [where](#reactor-io_write-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-io_write-name){: #reactor-io_write-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`device`](#reactor-io_write-device){: #reactor-io_write-device .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The IO device to read from |
+| [`chardata`](#reactor-io_write-chardata){: #reactor-io_write-chardata .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The data to write to the IO device |
+| [`description`](#reactor-io_write-description){: #reactor-io_write-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.io_write.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-io_write-wait_for-names){: #reactor-io_write-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_write-wait_for-description){: #reactor-io_write-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.io_write.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-io_write-guard-fun){: #reactor-io_write-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_write-guard-description){: #reactor-io_write-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.io_write.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-io_write-where-predicate){: #reactor-io_write-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-io_write-where-description){: #reactor-io_write-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.IoWrite`
 
 
 
@@ -1967,6 +3028,183 @@ Target: `Reactor.Dsl.Where`
 ### Introspection
 
 Target: `Reactor.File.Dsl.MkdirP`
+
+
+
+### reactor.open_file
+```elixir
+open_file name
+```
+
+
+Opens a file.
+
+Uses `File.open/2`.
+
+
+### Nested DSLs
+ * [wait_for](#reactor-open_file-wait_for)
+ * [guard](#reactor-open_file-guard)
+ * [where](#reactor-open_file-where)
+
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`name`](#reactor-open_file-name){: #reactor-open_file-name .spark-required} | `atom` |  | A unique name for the step. Used when choosing the return value of the Reactor and for arguments into other steps |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`path`](#reactor-open_file-path){: #reactor-open_file-path .spark-required} | `Reactor.Template.Element \| Reactor.Template.Input \| Reactor.Template.Result \| Reactor.Template.Value` |  | The path to the file to open |
+| [`modes`](#reactor-open_file-modes){: #reactor-open_file-modes .spark-required} | `list(:append \| :binary \| :charlist \| :compressed \| :delayed_write \| :exclusive \| :raw \| :read \| :read_ahead \| :sync \| :write \| :utf8 \| {:read_ahead, pos_integer} \| {:delayed_write, pos_integer, pos_integer} \| {:encoding, :latin1 \| :unicode \| :utf8 \| :utf16 \| :utf32 \| {:utf16, :big \| :little} \| {:utf32, :big \| :little}}) \| :ram` |  | The mode to open the file with |
+| [`description`](#reactor-open_file-description){: #reactor-open_file-description } | `String.t` |  | An optional description for the step |
+
+
+### reactor.open_file.wait_for
+```elixir
+wait_for names
+```
+
+
+Wait for the named step to complete before allowing this one to start.
+
+Desugars to `argument :_, result(step_to_wait_for)`
+
+
+
+
+### Examples
+```
+wait_for :create_user
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`names`](#reactor-open_file-wait_for-names){: #reactor-open_file-wait_for-names .spark-required} | `atom \| list(atom)` |  | The name of the step to wait for. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-open_file-wait_for-description){: #reactor-open_file-wait_for-description } | `String.t` |  | An optional description. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.WaitFor`
+
+### reactor.open_file.guard
+```elixir
+guard fun
+```
+
+
+Provides a flexible method for conditionally executing a step, or replacing it's result.
+
+Expects a two arity function which takes the step's arguments and context and returns one of the following:
+
+- `:cont` - the guard has passed.
+- `{:halt, result}` - the guard has failed - instead of executing the step use the provided result.
+
+
+
+
+### Examples
+```
+step :read_file_via_cache do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  guard fn %{path: path}, %{cache: cache} ->
+    case Cache.get(cache, path) do
+      {:ok, content} -> {:halt, {:ok, content}}
+      _ -> :cont
+    end
+  end
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`fun`](#reactor-open_file-guard-fun){: #reactor-open_file-guard-fun .spark-required} | `(any, any -> any) \| mfa` |  | The guard function. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-open_file-guard-description){: #reactor-open_file-guard-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Guard`
+
+### reactor.open_file.where
+```elixir
+where predicate
+```
+
+
+Only execute the surrounding step if the predicate function returns true.
+
+This is a simple version of `guard` which provides more flexibility at the cost of complexity.
+
+
+
+
+### Examples
+```
+step :read_file do
+  argument :path, input(:path)
+  run &File.read(&1.path)
+  where &File.exists?(&1.path)
+end
+
+```
+
+
+
+### Arguments
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`predicate`](#reactor-open_file-where-predicate){: #reactor-open_file-where-predicate .spark-required} | `(any -> any) \| mfa \| (any, any -> any) \| mfa` |  | Provide a function which takes the step arguments and optionally the context and returns a boolean value. |
+### Options
+
+| Name | Type | Default | Docs |
+|------|------|---------|------|
+| [`description`](#reactor-open_file-where-description){: #reactor-open_file-where-description } | `String.t` |  | An optional description of the guard. |
+
+
+
+
+
+### Introspection
+
+Target: `Reactor.Dsl.Where`
+
+
+
+
+### Introspection
+
+Target: `Reactor.File.Dsl.OpenFile`
 
 
 

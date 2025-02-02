@@ -46,6 +46,21 @@ defmodule Reactor.File.Ops do
     end
   end
 
+  @doc "An error wrapped version of `File.close/1`"
+  def close_file(device, step, message \\ "Unable to close IO device") do
+    with {:error, reason} when FileError.is_posix(reason) <-
+           File.close(device) do
+      {:error,
+       FileError.exception(
+         action: :close,
+         step: step,
+         message: message,
+         file: device,
+         reason: reason
+       )}
+    end
+  end
+
   @doc "An error wrapped version of `File.cp/2`"
   def cp(source_path, destination_path, step, message \\ "Unable to copy file") do
     with {:error, reason} when FileError.is_posix(reason) <-
@@ -76,6 +91,36 @@ defmodule Reactor.File.Ops do
            file: fail_path,
            reason: reason
          )}
+    end
+  end
+
+  @doc "An error wrapped version of `IO.binread/2`"
+  def io_binread(device, line_or_chars, step, message \\ "Unable to read from device") do
+    with {:error, reason} when FileError.is_posix(reason) <-
+           IO.binread(device, line_or_chars) do
+      {:error,
+       FileError.exception(
+         action: {:io_binread, line_or_chars},
+         step: step,
+         message: message,
+         file: device,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `IO.read/2`"
+  def io_read(device, line_or_chars, step, message \\ "Unable to read from device") do
+    with {:error, reason} when FileError.is_posix(reason) <-
+           IO.read(device, line_or_chars) do
+      {:error,
+       FileError.exception(
+         action: {:io_read, line_or_chars},
+         step: step,
+         message: message,
+         file: device,
+         reason: reason
+       )}
     end
   end
 
@@ -143,6 +188,20 @@ defmodule Reactor.File.Ops do
       {:error,
        FileError.exception(
          action: :mkdir_p,
+         step: step,
+         message: message,
+         file: path,
+         reason: reason
+       )}
+    end
+  end
+
+  @doc "An error wrapped version of `File.open/2`"
+  def open_file(path, modes, step, message \\ "Unable to open file") do
+    with {:error, reason} when FileError.is_posix(reason) <- File.open(path, modes) do
+      {:error,
+       FileError.exception(
+         action: {:open_file, modes},
          step: step,
          message: message,
          file: path,
