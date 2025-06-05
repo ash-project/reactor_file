@@ -1,8 +1,11 @@
+<img src="https://github.com/ash-project/reactor/blob/main/logos/reactor-logo-light-small.png?raw=true#gh-light-mode-only" alt="Logo Light" width="250">
+<img src="https://github.com/ash-project/reactor/blob/main/logos/reactor-logo-dark-small.png?raw=true#gh-dark-mode-only" alt="Logo Dark" width="250">
+
 # Reactor.File
 
-[![Build Status](https://drone.harton.dev/api/badges/james/reactor_file/status.svg)](https://drone.harton.dev/james/reactor_file)
-[![Hex.pm](https://img.shields.io/hexpm/v/reactor_file.svg)](https://hex.pm/packages/reactor_file)
-[![Hippocratic License HL3-FULL](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-FULL&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/full.html)
+[![Build Status](https://github.com/ash-project/reactor_file/actions/workflows/elixir.yml/badge.svg)](https://github.com/ash-project/reactor/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Hex version badge](https://img.shields.io/hexpm/v/reactor_file.svg)](https://hex.pm/packages/reactor_file)
 
 A [Reactor](https://github.com/ash-project/reactor) extension that provides steps for working with the local filesytem.
 
@@ -61,20 +64,9 @@ end
 
 Documentation for the latest release is available on [HexDocs](https://hexdocs.pm/reactor_file).
 
-## Github Mirror
+## Licence
 
-This repository is mirrored [on Github](https://github.com/jimsynz/reactor_file)
-from it's primary location [on my Forgejo instance](https://harton.dev/james/reactor_file).
-Feel free to raise issues and open PRs on Github.
-
-## License
-
-This software is licensed under the terms of the
-[HL3-FULL](https://firstdonoharm.dev), see the `LICENSE.md` file included with
-this package for the terms.
-
-This license actively proscribes this software being used by and for some
-industries, countries and activities. If your usage of this software doesn't
-comply with the terms of this license, then [contact me](mailto:james@harton.nz)
-with the details of your use-case to organise the purchase of a license - the
-cost of which may include a donation to a suitable charity or NGO.
+`reactor` is licensed under the terms of the [MIT
+license](https://opensource.org/licenses/MIT). See the [`LICENSE` file in this
+repository](https://github.com/ash-project/reactor_file/blob/main/LICENSE)
+for details.

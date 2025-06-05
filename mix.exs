@@ -17,8 +17,8 @@ defmodule Reactor.File.MixProject do
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       package: package(),
-      source_url: "https://harton.dev/james/reactor_file",
-      homepage_url: "https://harton.dev/james/reactor_file",
+      source_url: "https://github.com/ash-project/reactor-file",
+      homepage_url: "https://github.com/ash-project/reactor-file",
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -35,17 +35,16 @@ defmodule Reactor.File.MixProject do
     [
       name: :reactor_file,
       files: ~w[lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* documentation],
-      licenses: [],
+      licenses: ["MIT"],
       links: %{
-        "Source" => "https://harton.dev/james/reactor_file",
-        "GitHub" => "https://github.com/jimsynz/reactor_file",
-        "Changelog" => "https://harton.dev/james/reactor_file/src/branch/main/CHANGELOG.md",
+        "Source" => "https://github.com/ash-project/reactor-file",
+        "Changelog" => "https://github.com/ash-project/reactor-file/src/branch/main/CHANGELOG.md",
         "Sponsor" => "https://github.com/sponsors/jimsynz"
       },
       maintainers: [
         "James Harton <james@harton.nz>"
       ],
-      source_url: "https://harton.dev/james/reactor_file"
+      source_url: "https://github.com/ash-project/reactor-file"
     ]
   end
 
@@ -60,6 +59,7 @@ defmodule Reactor.File.MixProject do
       {:faker, "~> 0.18.0", only: ~w[dev test]a, runtime: false},
       {:git_ops, "~> 2.6", only: ~w[dev test]a, runtime: false},
       {:igniter, "~> 0.6", only: ~w[dev test]a},
+      {:mix_audit, "~> 2.0", only: ~w[dev test]a, runtime: false},
       {:reactor, "~> 0.15"},
       {:spark, "~> 2.0"}
     ]
@@ -88,7 +88,7 @@ defmodule Reactor.File.MixProject do
       groups_for_extras: extra_documentation_groups(),
       main: "readme",
       source_url_pattern:
-        "https://harton/dev/james/reactor_file/src/branch/main/%{path}#L%{line}",
+        "https://github.com/ash-project/reactor-file/src/branch/main/%{path}#L%{line}",
       spark: [
         extension: [
           %{
