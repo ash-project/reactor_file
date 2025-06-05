@@ -1,0 +1,410 @@
+# Reactor.File Cheatsheet
+
+Reactor.File is an extension that provides file system operations as steps within Reactor workflows.
+
+## Getting Started
+{: .col-2}
+
+### Basic Setup
+```elixir
+defmodule MyFileReactor do
+  use Reactor, extensions: [Reactor.File]
+
+  input :source_path
+  input :dest_path
+
+  read_file :content do
+    path input(:source_path)
+  end
+
+  write_file :output do
+    path input(:dest_path)
+    content result(:content)
+  end
+
+  return :output
+end
+```
+
+### Installation
+```elixir
+def deps do
+  [
+    {:reactor_file, "~> 0.18.2"}
+  ]
+end
+```
+
+## File Operations
+{: .col-2}
+
+### Reading Files
+```elixir
+# Read entire file
+read_file :config do
+  path value("/etc/config.json")
+end
+
+# Using inputs/results
+read_file :user_data do
+  path input(:file_path)
+end
+```
+
+### Writing Files
+```elixir
+# Write simple content
+write_file :output do
+  path input(:output_path)
+  content value("Hello, World!")
+end
+
+# Write with revert capability
+write_file :backup do
+  path input(:backup_path)
+  content result(:processed_data)
+  revert_on_undo? true
+end
+```
+
+### Copying Files
+```elixir
+# Copy single file
+cp :backup_file do
+  source input(:source_path)
+  destination input(:dest_path)
+end
+
+# Copy recursively
+cp_r :backup_directory do
+  source input(:source_dir)
+  destination input(:backup_dir)
+end
+```
+
+## Directory Operations
+{: .col-2}
+
+### Creating Directories
+```elixir
+# Create single directory
+mkdir :new_dir do
+  path input(:new_directory_path)
+end
+
+# Create with parents
+mkdir_p :deep_path do
+  path input(:deep_directory_path)
+  revert_on_undo? true
+end
+```
+
+### File Discovery
+```elixir
+# Find files by pattern
+glob :txt_files do
+  pattern input(:search_pattern)
+end
+
+# Include hidden files
+glob :all_configs do
+  pattern value("/etc/**/*.conf")
+  match_dot true
+end
+```
+
+### Removing Files
+```elixir
+# Remove single file
+rm :temp_file do
+  path input(:file_to_remove)
+end
+
+# Remove directory
+rmdir :empty_dir do
+  path input(:directory_to_remove)
+end
+```
+
+## File I/O Operations
+{: .col-3}
+
+### File Handles
+```elixir
+# Open file for reading
+open_file :file_handle do
+  path input(:data_file_path)
+  modes [:read]
+end
+
+# Open for writing
+open_file :output_handle do
+  path input(:log_file_path)
+  modes [:write, :append]
+end
+
+# Close when done
+close_file :cleanup do
+  file result(:file_handle)
+end
+```
+
+### Stream Reading
+```elixir
+# Read as lines
+io_stream :lines do
+  file result(:file_handle)
+end
+
+# Binary streaming
+io_binstream :chunks do
+  file result(:binary_handle)
+  line_or_bytes 4096
+end
+```
+
+### Direct I/O
+```elixir
+# Read specific amount
+io_read :chunk do
+  file result(:file_handle)
+  length 1024
+end
+
+# Write to file handle
+io_write :append_data do
+  file result(:output_handle)
+  data input(:log_message)
+end
+```
+
+## File Metadata
+{: .col-2}
+
+### File Information
+```elixir
+# Get file stats
+stat :file_info do
+  path input(:target_file)
+end
+
+# Get link stats (doesn't follow symlinks)
+lstat :link_info do
+  path input(:symlink_path)
+end
+
+# Read symlink target
+read_link :target do
+  path input(:symlink_path)
+end
+```
+
+### Creating Links
+```elixir
+# Hard link
+ln :hard_link do
+  existing input(:original_file)
+  new input(:hardlink_path)
+end
+
+# Symbolic link
+ln_s :soft_link do
+  existing input(:original_file)
+  new input(:symlink_path)
+end
+```
+
+## Permissions & Ownership
+{: .col-2}
+
+### Changing Permissions
+```elixir
+# Set file permissions
+chmod :make_executable do
+  path input(:script_path)
+  mode value(0o755)
+end
+
+# Use template for dynamic permissions
+chmod :set_perms do
+  path input(:file_path)
+  mode input(:permission_mode)
+  revert_on_undo? true
+end
+```
+
+### Changing Ownership
+```elixir
+# Change owner
+chown :change_owner do
+  path input(:log_file)
+  uid input(:new_owner_id)
+  revert_on_undo? true
+end
+
+# Change group
+chgrp :change_group do
+  path input(:shared_directory)
+  gid input(:group_id)
+end
+```
+
+### Writing File Stats
+```elixir
+# Update timestamps and permissions
+write_stat :update_metadata do
+  path input(:target_file)
+  stat result(:new_stat_info)
+end
+```
+
+## Advanced Patterns
+{: .col-2}
+
+### File Processing Pipeline
+```elixir
+defmodule ProcessFiles do
+  use Reactor, extensions: [Reactor.File]
+
+  input :directory
+
+  glob :source_files do
+    pattern input(:directory), transform: &Path.join(&1, "*.txt")
+  end
+
+  map :process_files do
+    source result(:source_files)
+
+    read_file :content do
+      path element(:process_files)
+    end
+
+    step :transform do
+      argument :data, result(:content)
+      run &String.upcase/1
+    end
+
+    write_file :output do
+      path element(:process_files), transform: &(&1 <> ".processed")
+      content result(:transform)
+    end
+
+    return :output
+  end
+
+  return :process_files
+end
+```
+
+### Backup and Restore
+```elixir
+# Create backup with metadata preservation
+stat :original_stats do
+  path input(:source_file)
+end
+
+cp :backup_file do
+  source input(:source_file)
+  destination input(:backup_path)
+end
+
+write_stat :preserve_metadata do
+  path input(:backup_path)
+  stat result(:original_stats)
+end
+```
+
+### File Validation
+```elixir
+# Check file exists and is readable
+stat :validate_source do
+  path input(:source_path)
+end
+
+step :check_permissions do
+  argument :stat, result(:validate_source)
+  run fn %{stat: %{access: access}}, _context ->
+    if :read in access do
+      {:ok, :valid}
+    else
+      {:error, "File not readable"}
+    end
+  end
+end
+```
+
+## Error Handling
+{: .col-2}
+
+### Common Patterns
+```elixir
+# Handle missing files gracefully
+read_file :optional_config do
+  path value("/etc/app/config.json")
+end
+
+step :use_defaults do
+  argument :config, result(:optional_config)
+  run fn
+    %{config: content}, _context -> 
+      {:ok, Jason.decode!(content)}
+    %{}, _context -> 
+      {:ok, %{default: true}}
+  end
+  where config_exists?/1
+end
+
+# Guard function
+def config_exists?(%{config: _}), do: true
+def config_exists?(_), do: false
+```
+
+### Undoable Operations
+```elixir
+# Operations that can be reverted
+mkdir_p :temp_workspace do
+  path input(:workspace_path)
+  revert_on_undo? true
+end
+
+write_file :temp_data do
+  path input(:workspace_path), transform: &Path.join(&1, "data.json")
+  content input(:json_data)
+  revert_on_undo? true
+end
+
+chmod :secure_temp do
+  path input(:workspace_path)
+  mode value(0o700)
+  revert_on_undo? true
+end
+```
+
+## Common Options
+{: .col-2}
+
+### Universal Options
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `name` | `atom` | Unique step identifier |
+| `description` | `string` | Optional step description |
+
+### Revert Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `revert_on_undo?` | `boolean` | `false` | Restore original state on undo |
+
+### File Mode Options
+
+| Mode | Description |
+| --- | --- |
+| `:read` | Read-only access |
+| `:write` | Write access |
+| `:append` | Append to file |
+| `:exclusive` | Fail if file exists |
+| `:raw` | Raw binary mode |
+| `:binary` | Binary mode |
+| `:compressed` | Enable compression |
+
