@@ -5,6 +5,15 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.18.2](https://github.com/ash-project/reactor_file/compare/v0.18.1...v0.18.2) (2025-06-05)
+
+
+
+
+### Improvements:
+
+* As of this commit Reactor is now licensed as MIT. by James Harton
+
 ## [v0.18.1](https://harton.dev/james/reactor_file/compare/v0.18.0...v0.18.1) (2025-02-09)
 
 
