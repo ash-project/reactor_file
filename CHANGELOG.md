@@ -5,6 +5,13 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.18.3](https://github.com/ash-project/reactor_file/compare/v0.18.2...v0.18.3) (2025-06-10)
+
+
+### Improvements
+
+* Added usage-rules.md file
+
 ## [v0.18.2](https://github.com/ash-project/reactor_file/compare/v0.18.1...v0.18.2) (2025-06-05)
 
 
