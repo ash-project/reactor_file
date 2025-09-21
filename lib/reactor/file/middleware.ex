@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.Middleware do
   @moduledoc """
   A Reactor middleware which provides a temporary storage space for files during

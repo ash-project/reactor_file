@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.Dsl.IoWrite do
   @moduledoc """
   An `io_write` DSL entity for the `Reactor.File` extension.

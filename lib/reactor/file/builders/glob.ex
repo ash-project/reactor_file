@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defimpl Reactor.Dsl.Build, for: Reactor.File.Dsl.Glob do
   @moduledoc false
   alias Reactor.{Argument, Builder}

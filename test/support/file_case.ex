@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule FileCase do
   @moduledoc """
   An ExUnit case template which creates a temporary directory for every test run.
