@@ -12,6 +12,7 @@ SPDX-License-Identifier: MIT
 [![Build Status](https://github.com/ash-project/reactor_file/actions/workflows/elixir.yml/badge.svg)](https://github.com/ash-project/reactor/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Hex version badge](https://img.shields.io/hexpm/v/reactor_file.svg)](https://hex.pm/packages/reactor_file)
+[![REUSE status](https://api.reuse.software/badge/github.com/ash-project/reactor_file)](https://api.reuse.software/info/github.com/ash-project/reactor_file)
 
 A [Reactor](https://github.com/ash-project/reactor) extension that provides steps for working with the local filesytem.
 
