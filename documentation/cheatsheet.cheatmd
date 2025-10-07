@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+
+SPDX-License-Identifier: MIT
+-->
+
 # Reactor.File Cheatsheet
 
 Reactor.File is an extension that provides file system operations as steps within Reactor workflows.

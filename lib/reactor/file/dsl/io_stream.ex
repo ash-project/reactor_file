@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.Dsl.IoStream do
   @moduledoc """
   An `io_stream` DSL entity for the `Reactor.File` extension.

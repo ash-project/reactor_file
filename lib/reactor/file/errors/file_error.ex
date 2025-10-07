@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.FileError do
   @moduledoc """
   This exception is returned when a POSIX file error is returned by the standard

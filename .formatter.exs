@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 # Used by "mix format"
 spark_locals_without_parens = [
   chardata: 1,

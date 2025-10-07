@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.MixProject do
   @moduledoc """
   A Reactor extension which provides steps for working with the filesystem.
@@ -17,8 +21,8 @@ defmodule Reactor.File.MixProject do
       elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       package: package(),
-      source_url: "https://github.com/ash-project/reactor-file",
-      homepage_url: "https://github.com/ash-project/reactor-file",
+      source_url: "https://github.com/ash-project/reactor_file",
+      homepage_url: "https://github.com/ash-project/reactor_file",
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -38,14 +42,16 @@ defmodule Reactor.File.MixProject do
         ~w[lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* documentation usage-rules.md],
       licenses: ["MIT"],
       links: %{
-        "Source" => "https://github.com/ash-project/reactor-file",
-        "Changelog" => "https://github.com/ash-project/reactor-file/src/branch/main/CHANGELOG.md",
-        "Sponsor" => "https://github.com/sponsors/jimsynz"
+        "Source" => "https://github.com/ash-project/reactor_file",
+        "Changelog" => "https://github.com/ash-project/reactor_file/blob/main/CHANGELOG.md",
+        "Sponsor" => "https://github.com/sponsors/jimsynz",
+        "REUSE Compliance" =>
+          "https://api.reuse.software/info/github.com/ash-project/reactor_file"
       },
       maintainers: [
         "James Harton <james@harton.nz>"
       ],
-      source_url: "https://github.com/ash-project/reactor-file"
+      source_url: "https://github.com/ash-project/reactor_file"
     ]
   end
 
@@ -89,7 +95,7 @@ defmodule Reactor.File.MixProject do
       groups_for_extras: extra_documentation_groups(),
       main: "readme",
       source_url_pattern:
-        "https://github.com/ash-project/reactor-file/src/branch/main/%{path}#L%{line}",
+        "https://github.com/ash-project/reactor_file/src/branch/main/%{path}#L%{line}",
       spark: [
         extension: [
           %{

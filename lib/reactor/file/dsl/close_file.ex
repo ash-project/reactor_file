@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.Dsl.CloseFile do
   @moduledoc """
   A `close_file` DSL entity for the `Reactor.File` DSL extension.

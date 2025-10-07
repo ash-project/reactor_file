@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+
+SPDX-License-Identifier: MIT
+-->
+
 # Reactor.File Usage Rules
 
 This document provides essential guidance for AI coding agents when working with the Reactor.File library.

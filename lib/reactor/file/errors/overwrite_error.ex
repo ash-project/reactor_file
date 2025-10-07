@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+#
+# SPDX-License-Identifier: MIT
+
 defmodule Reactor.File.OverwriteError do
   @moduledoc """
   This exception is returned when a step would otherwise overwritten data
