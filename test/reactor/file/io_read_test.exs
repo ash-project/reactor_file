@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 James Harton, Zach Daniel
+# SPDX-FileCopyrightText: 2025 reactor_file contributors <https://github.com/ash-project/reactor_file/graphs.contributors>
 #
 # SPDX-License-Identifier: MIT
 
