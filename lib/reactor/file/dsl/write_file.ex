@@ -9,6 +9,7 @@ defmodule Reactor.File.Dsl.WriteFile do
   alias Reactor.{Dsl.Argument, Dsl.Guard, Dsl.WaitFor, Dsl.Where, File.Types, Template}
 
   defstruct __identifier__: nil,
+            __spark_metadata__: nil,
             arguments: [],
             content: nil,
             description: nil,

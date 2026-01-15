@@ -9,6 +9,7 @@ defmodule Reactor.File.Dsl.LnS do
   alias Reactor.{Dsl.Argument, Dsl.Guard, Dsl.WaitFor, Dsl.Where, Template}
 
   defstruct __identifier__: nil,
+            __spark_metadata__: nil,
             arguments: [],
             description: nil,
             guards: [],
