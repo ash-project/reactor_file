@@ -128,7 +128,7 @@ defmodule Reactor.File.Step.CpR do
 
   defp overwrite_check(source, target, %{type: :directory}, step, false) do
     if File.dir?(source) do
-      recursive_overwrite_check(source, target, step)
+      contents_overwrite_check(source, target, step)
     else
       {:error,
        OverwriteError.exception(step: step, file: target, message: "directory already exists")}
@@ -140,29 +140,35 @@ defmodule Reactor.File.Step.CpR do
       {:error,
        OverwriteError.exception(step: step, file: target, message: "#{stat.type} already exists")}
 
-  defp recursive_overwrite_check(source, target, step) do
-    source
-    |> Path.join("**/*")
-    |> Path.wildcard(match_dot: true)
-    |> Enum.reduce_while(:ok, fn source_file, :ok ->
-      target_file =
-        source_file
-        |> Path.relative_to(source)
-        |> then(&Path.join(target, &1))
+  # A path inside the target can only exist when its parent also exists, so a
+  # collision below an entry always implies a collision at the entry itself.
+  defp contents_overwrite_check(source, target, step) do
+    case File.ls(source) do
+      {:ok, entries} ->
+        entries
+        |> Enum.sort()
+        |> Enum.reduce_while(:ok, fn entry, :ok ->
+          target |> Path.join(entry) |> entry_overwrite_check(step)
+        end)
 
-      case File.stat(target_file) do
-        {:ok, stat} ->
-          {:halt,
-           {:error,
-            OverwriteError.exception(
-              step: step,
-              file: target_file,
-              message: "#{stat.type} already exists"
-            )}}
+      {:error, _} ->
+        :ok
+    end
+  end
 
-        {:error, _} ->
-          {:cont, :ok}
-      end
-    end)
+  defp entry_overwrite_check(target_file, step) do
+    case File.stat(target_file) do
+      {:ok, stat} ->
+        {:halt,
+         {:error,
+          OverwriteError.exception(
+            step: step,
+            file: target_file,
+            message: "#{stat.type} already exists"
+          )}}
+
+      {:error, _} ->
+        {:cont, :ok}
+    end
   end
 end
