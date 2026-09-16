@@ -76,6 +76,14 @@ defmodule Reactor.File.Step.Ln do
   def revert(result, context, _options) do
     step = context.current_step
 
+    with :ok <- rm(result.path, step) do
+      restore_original(result, step)
+    end
+  end
+
+  defp restore_original(%{original: nil}, _step), do: :ok
+
+  defp restore_original(result, step) do
     with :ok <- cp(result.original, result.path, step),
          :ok <- write_stat(result.path, result.before_stat, [], step) do
       rm(result.original, step)

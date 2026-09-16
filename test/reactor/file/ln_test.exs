@@ -92,13 +92,38 @@ defmodule Reactor.File.LnTest do
 
     test "it backs up and reverts the original file", %{tmp_dir: tmp_dir} do
       [existing_file, new_file] = lorem_files(tmp_dir, how_many: 2)
+      File.chmod!(existing_file, 0o600)
+      File.chmod!(new_file, 0o666)
+      existing_content = File.read!(existing_file)
       original_content = File.read!(new_file)
 
       assert {:error, error} =
                Reactor.run(LnRevertReactor, %{existing: existing_file, new: new_file})
 
-      assert File.read!(new_file) == original_content
       assert Exception.message(error) =~ "abort"
+
+      assert File.read!(existing_file) == existing_content
+      assert %{mode: existing_mode, links: 1} = File.stat!(existing_file)
+      assert Bitwise.band(existing_mode, 0o777) == 0o600
+
+      assert %{type: :regular, mode: new_mode} = File.lstat!(new_file)
+      assert Bitwise.band(new_mode, 0o777) == 0o666
+      assert File.read!(new_file) == original_content
+    end
+
+    test "when the new file didn't exist, it removes the link", %{tmp_dir: tmp_dir} do
+      existing_file = lorem_file(tmp_dir)
+      existing_content = File.read!(existing_file)
+      new_file = Path.join(tmp_dir, Faker.UUID.v4())
+
+      assert {:error, error} =
+               Reactor.run(LnRevertReactor, %{existing: existing_file, new: new_file})
+
+      assert Exception.message(error) =~ "abort"
+
+      assert {:error, :enoent} = File.lstat(new_file)
+      assert File.read!(existing_file) == existing_content
+      assert File.stat!(existing_file).links == 1
     end
   end
 end
