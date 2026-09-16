@@ -12,6 +12,17 @@ See [Conventional Commits](Https://conventionalcommits.org) for commit guideline
 
 <!-- changelog -->
 
+## [v0.18.5](https://github.com/ash-project/reactor_file/compare/v0.18.4...v0.18.5) (2026-09-16)
+
+
+
+
+### Bug Fixes:
+
+* ln: remove the link before the backup is restored on undo (#37) by James Harton [(#37)](https://github.com/ash-project/reactor_file/pull/37)
+
+* `cp_r` overwrite check no longer treats the source path as a glob (#35) by James Harton [(#35)](https://github.com/ash-project/reactor_file/pull/35)
+
 ## [v0.18.4](https://github.com/ash-project/reactor_file/compare/v0.18.3...v0.18.4) (2026-02-15)
 
 
