@@ -74,6 +74,6 @@ defmodule Reactor.File.Step.WriteStat do
   @doc false
   @impl true
   def revert(result, context, _options) do
-    write_stat(result.path, result.before_state, [], context.current_step)
+    write_stat(result.path, result.before_stat, [], context.current_step)
   end
 end

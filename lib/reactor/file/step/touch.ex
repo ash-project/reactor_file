@@ -111,9 +111,9 @@ defmodule Reactor.File.Step.Touch do
   @impl true
   def revert(result, context, _options) do
     if is_nil(result.before_stat) do
-      rm(result.path, context.current_stat)
+      rm(result.path, context.current_step)
     else
-      write_stat(result.path, result.before_stat, [], context.current_stat)
+      write_stat(result.path, result.before_stat, [], context.current_step)
     end
   end
 end
